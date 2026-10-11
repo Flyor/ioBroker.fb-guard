@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f6f8b"/>
+      <stop offset="1" stop-color="#0d3b4f"/>
+    </linearGradient>
+    <linearGradient id="box" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dce8ee"/>
+    </linearGradient>
+  </defs>
+  <!-- shield -->
+  <path d="M256 24 L448 92 V236 C448 362 366 446 256 490 C146 446 64 362 64 236 V92 Z"
+        fill="url(#shield)" stroke="#0a2e3d" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M256 54 L420 112 V238 C420 344 352 416 256 458 Z" fill="#ffffff" opacity="0.07"/>
+  <!-- antennas -->
+  <path d="M186 238 L160 152" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <path d="M326 238 L352 152" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <!-- router body -->
+  <rect x="128" y="232" width="256" height="92" rx="22" fill="url(#box)" stroke="#0a2e3d" stroke-width="8"/>
+  <!-- status LEDs -->
+  <circle cx="172" cy="278" r="11" fill="#2ecc71"/>
+  <circle cx="208" cy="278" r="11" fill="#2ecc71"/>
+  <circle cx="244" cy="278" r="11" fill="#2ecc71"/>
+  <rect x="284" y="270" width="72" height="16" rx="8" fill="#9db4c0"/>
+  <!-- check mark -->
+  <circle cx="256" cy="382" r="44" fill="#2ecc71" stroke="#0a2e3d" stroke-width="8"/>
+  <path d="M234 383 L251 400 L281 366" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

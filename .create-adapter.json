@@ -1,0 +1,45 @@
+{
+    "cli": true,
+    "target": "directory",
+    "adapterName": "fb-guard",
+    "title": "fb-guard",
+    "description": "Monitors the security of your FRITZ!Box: failed logins, open ports, firmware, weak settings",
+    "keywords": [
+        "fritzbox",
+        "security",
+        "tr-064",
+        "monitoring",
+        "firewall"
+    ],
+    "expert": "yes",
+    "features": [
+        "adapter"
+    ],
+    "adminFeatures": [],
+    "type": "infrastructure",
+    "startMode": "daemon",
+    "connectionType": "local",
+    "dataSource": "poll",
+    "connectionIndicator": "yes",
+    "language": "TypeScript",
+    "nodeVersion": "22",
+    "adminUi": "json",
+    "tools": [
+        "ESLint",
+        "Prettier"
+    ],
+    "eslintConfig": "official",
+    "releaseScript": "yes",
+    "devServer": "no",
+    "indentation": "Space (4)",
+    "quotes": "single",
+    "authorName": "Flyor",
+    "authorGithub": "Flyor",
+    "authorEmail": "AskMe@Stonehiller.de",
+    "gitRemoteProtocol": "HTTPS",
+    "gitCommit": "no",
+    "defaultBranch": "main",
+    "license": "MIT License",
+    "dependabot": "yes",
+    "creatorVersion": "3.1.5"
+}

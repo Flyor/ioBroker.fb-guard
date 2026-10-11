@@ -1,0 +1,763 @@
+{
+    "i18n": true,
+    "type": "tabs",
+    "items": {
+        "welcome": {
+            "type": "panel",
+            "label": "1. Welcome",
+            "items": {
+                "_h1": {
+                    "type": "header",
+                    "text": "What this adapter does",
+                    "size": 3,
+                    "newLine": true
+                },
+                "_t2": {
+                    "type": "staticText",
+                    "text": "fb-guard regularly checks your FRITZ!Box for failed logins, open ports, outdated firmware and weak settings, and tells you via Telegram or e-mail.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t3": {
+                    "type": "staticText",
+                    "text": "It only reads. It does not change anything on the box and only talks to your own box. External services stay off unless you switch them on.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t4": {
+                    "type": "staticText",
+                    "text": "Go through the tabs from left to right. Every step has a test button.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t5": {
+                    "type": "staticText",
+                    "text": "Tip: open the ioBroker admin via HTTPS, then your entries are encrypted on the way to the server as well. The password is stored encrypted.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_h6": {
+                    "type": "header",
+                    "text": "Disclaimer",
+                    "size": 3,
+                    "newLine": true
+                },
+                "_t7": {
+                    "type": "staticText",
+                    "text": "fb-guard is an independent open-source project. It is not affiliated with, endorsed or supported by FRITZ! GmbH (formerly AVM). FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH and are only used to name the supported device.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t8": {
+                    "type": "staticText",
+                    "text": "No guarantee: the adapter helps you spot problems, but it cannot make your network secure on its own. Use at your own risk.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontSize": "smaller"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                }
+            }
+        },
+        "box": {
+            "type": "panel",
+            "label": "2. Connect box",
+            "items": {
+                "_h9": {
+                    "type": "header",
+                    "text": "Find the box",
+                    "size": 3,
+                    "newLine": true
+                },
+                "host": {
+                    "type": "text",
+                    "label": "Address of the FRITZ!Box",
+                    "help": "e.g. 192.168.178.1 or fritz.box",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_discover": {
+                    "type": "sendTo",
+                    "command": "discover",
+                    "label": "Search",
+                    "variant": "outlined",
+                    "showProcess": true,
+                    "useNative": true,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "_h10": {
+                    "type": "header",
+                    "text": "Create a user for the adapter",
+                    "size": 3,
+                    "newLine": true
+                },
+                "_t11": {
+                    "type": "staticText",
+                    "text": "Open the box in your browser: System > FRITZ!Box Users > Add User. Name it e.g. \"fb-guard\", choose a long password and grant only the right \"FRITZ!Box Settings\". Switch off \"Access from the internet\".",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t12": {
+                    "type": "staticText",
+                    "text": "Also check: Home Network > Network > Network Settings > \"Allow access for applications\" must be on.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "username": {
+                    "type": "text",
+                    "label": "User",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "password": {
+                    "type": "password",
+                    "label": "Password",
+                    "repeat": false,
+                    "visible": true,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "useTls": {
+                    "type": "checkbox",
+                    "label": "Encrypted connection (recommended)",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_tlsOff": {
+                    "type": "staticText",
+                    "text": "Without encryption the password crosses your network in an attackable form. Only switch off if the box cannot do it.",
+                    "xs": 12,
+                    "newLine": true,
+                    "hidden": "!!data.useTls",
+                    "style": {
+                        "color": "orange"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_test": {
+                    "type": "sendTo",
+                    "command": "testConnection",
+                    "label": "Test connection",
+                    "variant": "contained",
+                    "showProcess": true,
+                    "jsonData": "{\"host\": ${JSON.stringify(data.host)}, \"username\": ${JSON.stringify(data.username)}, \"password\": ${JSON.stringify(data.password)}, \"useTls\": ${JSON.stringify(data.useTls)}}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_trust": {
+                    "type": "sendTo",
+                    "command": "trustCertificate",
+                    "label": "Trust certificate again",
+                    "variant": "outlined",
+                    "showProcess": true,
+                    "jsonData": "{}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": false,
+                    "confirm": {
+                        "title": "Trust new certificate?",
+                        "text": "Only do this if you reset or updated the box.",
+                        "ok": "OK",
+                        "cancel": "Cancel"
+                    },
+                    "lg": 4,
+                    "xl": 4
+                }
+            }
+        },
+        "notify": {
+            "type": "panel",
+            "label": "3. Notifications",
+            "items": {
+                "telegramEnabled": {
+                    "type": "checkbox",
+                    "label": "Telegram",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "telegramInstance": {
+                    "type": "instance",
+                    "adapter": "telegram",
+                    "label": "Telegram instance",
+                    "hidden": "!data.telegramEnabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "telegramUser": {
+                    "type": "text",
+                    "label": "Recipient (empty = all)",
+                    "hidden": "!data.telegramEnabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "emailEnabled": {
+                    "type": "checkbox",
+                    "label": "E-mail",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "emailInstance": {
+                    "type": "instance",
+                    "adapter": "email",
+                    "label": "E-mail instance",
+                    "hidden": "!data.emailEnabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "emailTo": {
+                    "type": "text",
+                    "label": "Recipient (empty = default of the instance)",
+                    "hidden": "!data.emailEnabled",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "minSeverity": {
+                    "type": "select",
+                    "label": "Notify from",
+                    "options": [
+                        {
+                            "label": "Info",
+                            "value": "info"
+                        },
+                        {
+                            "label": "Warning",
+                            "value": "warning"
+                        },
+                        {
+                            "label": "Critical only",
+                            "value": "critical"
+                        }
+                    ],
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "notifyResolved": {
+                    "type": "checkbox",
+                    "label": "Also notify when something is resolved",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "summaryInterval": {
+                    "type": "select",
+                    "label": "Overview of all findings",
+                    "options": [
+                        {
+                            "label": "Off",
+                            "value": "off"
+                        },
+                        {
+                            "label": "Daily at 9:00",
+                            "value": "daily"
+                        },
+                        {
+                            "label": "Mondays at 9:00",
+                            "value": "weekly"
+                        }
+                    ],
+                    "help": "One message listing everything that is open, also findings below \"Notify from\".",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_testNotify": {
+                    "type": "sendTo",
+                    "command": "testNotify",
+                    "label": "Send test message",
+                    "variant": "contained",
+                    "showProcess": true,
+                    "jsonData": "{\"telegramEnabled\": ${JSON.stringify(data.telegramEnabled)}, \"telegramInstance\": ${JSON.stringify(data.telegramInstance)}, \"telegramUser\": ${JSON.stringify(data.telegramUser)}, \"emailEnabled\": ${JSON.stringify(data.emailEnabled)}, \"emailInstance\": ${JSON.stringify(data.emailInstance)}, \"emailTo\": ${JSON.stringify(data.emailTo)}}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                }
+            }
+        },
+        "checks": {
+            "type": "panel",
+            "label": "4. Checks",
+            "items": {
+                "_h13": {
+                    "type": "header",
+                    "text": "Intervals (minutes)",
+                    "size": 3,
+                    "newLine": true
+                },
+                "intervalEvents": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 60,
+                    "label": "Event log",
+                    "help": "1 to 60, default 5",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "newLine": true,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "intervalPorts": {
+                    "type": "number",
+                    "min": 15,
+                    "max": 1440,
+                    "label": "Ports",
+                    "help": "15 to 1440, default 60",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "intervalSettings": {
+                    "type": "number",
+                    "min": 15,
+                    "max": 1440,
+                    "label": "Settings",
+                    "help": "15 to 1440, default 60",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "intervalFirmware": {
+                    "type": "number",
+                    "min": 60,
+                    "max": 10080,
+                    "label": "Firmware",
+                    "help": "60 to 10080 (1 week), default 720",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 3,
+                    "xl": 3
+                },
+                "_t14": {
+                    "type": "staticText",
+                    "text": "Values outside the range are corrected automatically.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontSize": "smaller"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_h15": {
+                    "type": "header",
+                    "text": "Logins",
+                    "size": 3,
+                    "newLine": true
+                },
+                "attackThreshold": {
+                    "type": "number",
+                    "min": 1,
+                    "max": 100,
+                    "label": "Failed logins per address before alarm",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "alertRemoteLogins": {
+                    "type": "checkbox",
+                    "label": "Report successful logins from the internet",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "knownIps": {
+                    "type": "text",
+                    "label": "Known addresses (comma separated, CIDR allowed)",
+                    "help": "Logins from these addresses are not reported",
+                    "xs": 12,
+                    "md": 8,
+                    "newLine": true,
+                    "sm": 12,
+                    "lg": 8,
+                    "xl": 8
+                },
+                "_h16": {
+                    "type": "header",
+                    "text": "New devices",
+                    "size": 3,
+                    "newLine": true
+                },
+                "alertNewDevices": {
+                    "type": "checkbox",
+                    "label": "Report new devices in the network",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_randomWarn": {
+                    "type": "staticText",
+                    "text": "Caution: many phones, tablets and laptops use private, changing addresses. After a change they look like a new device to the box. Mainly iPhone, iPad, Apple Watch and Mac (\"Private Wi-Fi address\"), Android 10 and later (\"Randomized MAC\"), Windows 10/11 (\"Random hardware addresses\") and Chromebooks.",
+                    "xs": 12,
+                    "newLine": true,
+                    "hidden": "!data.alertNewDevices",
+                    "style": {
+                        "color": "orange"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "skipKnownPrivate": {
+                    "type": "checkbox",
+                    "label": "Do not report known devices that only got a new private address",
+                    "help": "Recognised by the device name. A stranger could use the same name, so this is a trade-off.",
+                    "hidden": "!data.alertNewDevices",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_devices": {
+                    "type": "textSendTo",
+                    "command": "devicesInfo",
+                    "container": "html",
+                    "hidden": "!data.alertNewDevices",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_h17": {
+                    "type": "header",
+                    "text": "Ports",
+                    "size": 3,
+                    "newLine": true
+                },
+                "portSelfTest": {
+                    "type": "checkbox",
+                    "label": "Test open ports on the own WAN address",
+                    "help": "Only your own address. Tested from inside, so the result is limited.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_h18": {
+                    "type": "header",
+                    "text": "External services (privacy)",
+                    "size": 3,
+                    "newLine": true
+                },
+                "vendorFirmwareCheck": {
+                    "type": "checkbox",
+                    "label": "Compare firmware with the vendor download server",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t19": {
+                    "type": "staticText",
+                    "text": "Sends only the model name to download.avm.de. Off by default.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontSize": "smaller"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                }
+            }
+        },
+        "findings": {
+            "type": "panel",
+            "label": "5. Findings",
+            "items": {
+                "_h20": {
+                    "type": "header",
+                    "text": "Current findings",
+                    "size": 3,
+                    "newLine": true
+                },
+                "_t21": {
+                    "type": "staticText",
+                    "text": "Shown when the settings are opened. The adapter must be running.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontSize": "smaller"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_findings": {
+                    "type": "textSendTo",
+                    "command": "findingsText",
+                    "container": "html",
+                    "jsonData": "{\"confirmations\": ${JSON.stringify(data.confirmations)}}",
+                    "alsoDependsOn": [
+                        "confirmations"
+                    ],
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_h22": {
+                    "type": "header",
+                    "text": "Confirm as intended",
+                    "size": 3,
+                    "newLine": true
+                },
+                "_t23": {
+                    "type": "staticText",
+                    "text": "Some findings can be intended, e.g. a port forwarding you set up yourself. Confirmed findings are no longer reported and move to the end of the list above. If something changes about them, you get notified again.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_t24": {
+                    "type": "staticText",
+                    "text": "1. Click \"Fetch findings into the table\". 2. Tick what is intended. 3. Click \"Save\" at the bottom. Only then the confirmation counts.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontWeight": "bold"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_loadConf": {
+                    "type": "sendTo",
+                    "command": "loadConfirmations",
+                    "label": "Fetch findings into the table",
+                    "variant": "outlined",
+                    "showProcess": true,
+                    "jsonData": "{}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "useNative": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "confirmations": {
+                    "type": "table",
+                    "noDelete": true,
+                    "xs": 12,
+                    "newLine": true,
+                    "items": [
+                        {
+                            "type": "text",
+                            "attr": "title",
+                            "title": "Finding",
+                            "readOnly": true,
+                            "noTranslation": true
+                        },
+                        {
+                            "type": "checkbox",
+                            "attr": "ok",
+                            "title": "Intended",
+                            "width": "6em"
+                        }
+                    ],
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_sendSummary": {
+                    "type": "sendTo",
+                    "command": "sendSummary",
+                    "label": "Send overview to Telegram / e-mail",
+                    "variant": "outlined",
+                    "showProcess": true,
+                    "jsonData": "{\"confirmations\": ${JSON.stringify(data.confirmations)}}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_t25": {
+                    "type": "staticText",
+                    "text": "For scripts and VIS the same data is in the states of this instance, e.g. \"summary.score\" and \"summary.text\". Every state has a description.",
+                    "xs": 12,
+                    "newLine": true,
+                    "style": {
+                        "fontSize": "smaller"
+                    },
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                }
+            }
+        },
+        "diag": {
+            "type": "panel",
+            "label": "Diagnostics",
+            "items": {
+                "_t26": {
+                    "type": "staticText",
+                    "text": "Reads all relevant values once and stores them in \"info.diagnostics\". Passwords, keys, user names, addresses and serial numbers are masked as far as possible. Useful for bug reports, but read it before you share it. The result is shown below the button.",
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                },
+                "_diagnose": {
+                    "type": "sendTo",
+                    "command": "diagnose",
+                    "label": "Run diagnostics",
+                    "variant": "contained",
+                    "showProcess": true,
+                    "jsonData": "{}",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "newLine": true,
+                    "useNative": true,
+                    "lg": 4,
+                    "xl": 4
+                },
+                "_diagView": {
+                    "type": "textSendTo",
+                    "command": "diagnosticsText",
+                    "container": "html",
+                    "alsoDependsOn": [
+                        "_diagStamp"
+                    ],
+                    "xs": 12,
+                    "newLine": true,
+                    "sm": 12,
+                    "md": 12,
+                    "lg": 12,
+                    "xl": 12
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "name": "iobroker.fb-guard",
+  "version": "0.1.0",
+  "description": "Security guard for your FRITZ!Box router: reports failed logins, open ports, pending firmware updates and weak settings via Telegram or e-mail",
+  "author": {
+    "name": "Flyor",
+    "email": "AskMe@Stonehiller.de"
+  },
+  "contributors": [],
+  "homepage": "https://github.com/Flyor/ioBroker.fb-guard",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "fritzbox",
+    "security",
+    "tr-064",
+    "monitoring",
+    "firewall",
+    "fritz!box",
+    "avm",
+    "router"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Flyor/ioBroker.fb-guard.git"
+  },
+  "engines": {
+    "node": ">= 22"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.4.3",
+    "fast-xml-parser": "^5.11.2"
+  },
+  "devDependencies": {
+    "@alcalzone/release-script": "^5.2.1",
+    "@alcalzone/release-script-plugin-iobroker": "^5.2.0",
+    "@alcalzone/release-script-plugin-license": "^5.2.2",
+    "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
+    "@iobroker/adapter-dev": "^1.5.0",
+    "@iobroker/eslint-config": "^2.3.4",
+    "@iobroker/testing": "^6.3.0",
+    "@tsconfig/node22": "^22.0.6",
+    "@types/iobroker": "npm:@iobroker/types@^7.2.5",
+    "@types/node": "^22.20.5",
+    "rimraf": "^6.1.3",
+    "source-map-support": "^0.5.21",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.9.3"
+  },
+  "main": "build/main.js",
+  "files": [
+    "admin{,/!(src)/**}/!(tsconfig|tsconfig.*|.eslintrc).{json,json5}",
+    "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
+    "build/",
+    "www/",
+    "io-package.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prebuild": "rimraf build",
+    "build": "build-adapter ts",
+    "watch": "build-adapter ts --watch",
+    "prebuild:ts": "rimraf build",
+    "build:ts": "build-adapter ts",
+    "watch:ts": "build-adapter ts --watch",
+    "test:ts": "mocha --config test/mocharc.custom.json \"src/**/*.test.ts\"",
+    "test:package": "mocha test/package --exit",
+    "test:integration": "mocha test/integration --exit",
+    "test": "npm run test:ts && npm run test:package",
+    "check": "tsc --noEmit",
+    "lint": "eslint -c eslint.config.mjs .",
+    "translate": "translate-adapter",
+    "release": "release-script",
+    "test:unit": "npm run test:ts"
+  },
+  "bugs": {
+    "url": "https://github.com/Flyor/ioBroker.fb-guard/issues"
+  },
+  "readmeFilename": "README.md"
+}

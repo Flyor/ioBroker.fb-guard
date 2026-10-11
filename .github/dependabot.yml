@@ -1,0 +1,32 @@
+# Dependabot runs on day 17 of each month at 02:38 (Europe/Berlin)
+# Cooldown delays npm version updates by 7 days; security updates are not delayed.
+# Reference: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: cron
+      cronjob: "38 2 17 * *"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 15
+    assignees:
+      - Flyor
+    versioning-strategy: increase
+    cooldown:
+      default-days: 7
+    ignore:
+      # @types/node must follow the minimum supported Node.js major (engines: >= 22)
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: cron
+      cronjob: "38 2 17 * *"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 15
+    assignees:
+      - Flyor
