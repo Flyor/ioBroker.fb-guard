@@ -54,8 +54,7 @@ FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH. This project is not affiliat
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.1.1 (2026-10-11)
 * (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up
 * (Flyor) Pressing "run now" several times no longer queues the same checks again
 * (Flyor) Small cleanups in the package

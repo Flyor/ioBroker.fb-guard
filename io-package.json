@@ -1,1224 +1,1237 @@
 {
-    "common": {
-        "name": "fb-guard",
-        "version": "0.1.0",
-        "news": {
-            "0.1.0": {
-                "en": "First release: watches failed logins, open ports, firmware and settings of the FRITZ!Box and reports via Telegram or e-mail",
-                "de": "Erste Version: überwacht fehlgeschlagene Anmeldungen, offene Ports, Firmware und Einstellungen der FRITZ!Box und meldet per Telegram oder E-Mail",
-                "ru": "Первый выпуск: отслеживает неудачные входы в систему, открытые порты, прошивку и настройки FRITZ!Box и сообщает через Telegram или по электронной почте.",
-                "pt": "Primeira versão: monitora logins com falha, portas abertas, firmware e configurações do FRITZ!Box e relatórios via Telegram ou e-mail",
-                "nl": "Eerste release: bekijkt mislukte logins, open poorten, firmware en instellingen van de FRITZ!Box en rapporteert via Telegram of e-mail",
-                "fr": "Première version : surveille les échecs de connexion, les ports ouverts, le micrologiciel et les paramètres de la FRITZ!Box et signale par télégramme ou par e-mail.",
-                "it": "Prima versione: controlla login falliti, porte aperte, firmware e impostazioni del FRITZ!Box e segnala tramite Telegram o e-mail",
-                "es": "Primera versión: supervisa los inicios de sesión fallidos, los puertos abiertos, el firmware y la configuración de su FRITZ!Box e informa a través de Telegram o correo electrónico",
-                "pl": "Pierwsza wersja: monitorowanie nieudanych logowań, otwartych portów, oprogramowania sprzętowego i ustawień urządzenia FRITZ!Box oraz raportowanie za pośrednictwem Telegramu lub e-maila",
-                "uk": "Перший випуск: стежить за невдалими входами, відкритими портами, прошивкою та налаштуваннями FRITZ!Box і повідомляє через Telegram або електронну пошту",
-                "zh-cn": "首次发布：监视 FRITZ!Box 的失败登录、开放端口、固件和设置，并通过 Telegram 或电子邮件进行报告"
-            }
+  "common": {
+    "name": "fb-guard",
+    "version": "0.1.1",
+    "news": {
+      "0.1.1": {
+        "en": "Clearer log messages: network problems and internal errors are no longer mixed up\nPressing \"run now\" several times no longer queues the same checks again\nSmall cleanups in the package",
+        "de": "Klarere Logs: Netzwerkprobleme und interne Fehler gehören nicht mehr zusammen\nMehrmaliges Drücken von „Jetzt ausführen“ führt nicht mehr zu denselben Schecks\nKleine Aufräumarbeiten im Paket",
+        "ru": "Более четкие сообщения журнала: проблемы с сетью и внутренние ошибки больше не смешиваются\nПри многократном нажатии кнопки «Выполнить сейчас» одни и те же проверки больше не ставятся в очередь\nНебольшие уборки в упаковке",
+        "pt": "Mensagens de log mais claras: problemas de rede e erros internos não se misturam\nPressionar “run now” várias vezes não enfileira mais os mesmos cheques\nPequenas limpezas no pacote",
+        "nl": "Duidelijkere logboekberichten: netwerkproblemen en interne fouten worden niet langer door elkaar gehaald\nAls u meerdere keren op „Nu uitvoeren” drukt, worden dezelfde controles niet langer opnieuw in de wachtrij geplaatst\nKleine opruimingen in de verpakking",
+        "fr": "Messages de log plus clairs : plus de confusion entre problèmes réseau et erreurs internes\nAppuyer plusieurs fois sur « Exécuter maintenant » ne met plus les mêmes chèques\nPetits nettoyages inclus",
+        "it": "Log più chiari: problemi di rete ed errori interni non si confondono più\nPremendo più volte «esegui ora» non si attendono più gli stessi controlli\nPiccole pulizie nel pacco",
+        "es": "Mensajes de registro más claros: los problemas de red y los errores internos ya no se mezclan\nAl pulsar «ejecutar ahora» varias veces ya no vuelve a hacer cola los mismos cheques\nPequeñas limpiezas en el paquete",
+        "pl": "Wyraźniejsze komunikaty dziennika: problemy z siecią i błędy wewnętrzne nie są już mieszane\nKilkakrotne naciśnięcie „uruchom teraz” przestaje już kolejkować te same kontrole\nMałe sprzątanie w opakowaniu",
+        "uk": "Більш чіткі повідомлення журналу: проблеми з мережею та внутрішні помилки більше не змішуються\nКілька разів натискання кнопки «запустити зараз» більше не призводить до черги тих самих перевірок\nНевеликі прибирання в упаковці",
+        "zh-cn": "更清晰的日志消息：网络问题和内部错误不再混为一谈\n多次按 “立即运行” 不会再将相同的检查排入队列\n包装里有一些小清理品"
+      },
+      "0.1.0": {
+        "en": "First release: watches failed logins, open ports, firmware and settings of the FRITZ!Box and reports via Telegram or e-mail",
+        "de": "Erste Version: überwacht fehlgeschlagene Anmeldungen, offene Ports, Firmware und Einstellungen der FRITZ!Box und meldet per Telegram oder E-Mail",
+        "ru": "Первый выпуск: отслеживает неудачные входы в систему, открытые порты, прошивку и настройки FRITZ!Box и сообщает через Telegram или по электронной почте.",
+        "pt": "Primeira versão: monitora logins com falha, portas abertas, firmware e configurações do FRITZ!Box e relatórios via Telegram ou e-mail",
+        "nl": "Eerste release: bekijkt mislukte logins, open poorten, firmware en instellingen van de FRITZ!Box en rapporteert via Telegram of e-mail",
+        "fr": "Première version : surveille les échecs de connexion, les ports ouverts, le micrologiciel et les paramètres de la FRITZ!Box et signale par télégramme ou par e-mail.",
+        "it": "Prima versione: controlla login falliti, porte aperte, firmware e impostazioni del FRITZ!Box e segnala tramite Telegram o e-mail",
+        "es": "Primera versión: supervisa los inicios de sesión fallidos, los puertos abiertos, el firmware y la configuración de su FRITZ!Box e informa a través de Telegram o correo electrónico",
+        "pl": "Pierwsza wersja: monitorowanie nieudanych logowań, otwartych portów, oprogramowania sprzętowego i ustawień urządzenia FRITZ!Box oraz raportowanie za pośrednictwem Telegramu lub e-maila",
+        "uk": "Перший випуск: стежить за невдалими входами, відкритими портами, прошивкою та налаштуваннями FRITZ!Box і повідомляє через Telegram або електронну пошту",
+        "zh-cn": "首次发布：监视 FRITZ!Box 的失败登录、开放端口、固件和设置，并通过 Telegram 或电子邮件进行报告"
+      }
+    },
+    "titleLang": {
+      "en": "fb-guard",
+      "de": "fb-guard",
+      "ru": "fb-guard",
+      "pt": "fb-guard",
+      "nl": "fb-guard",
+      "fr": "fb-guard",
+      "it": "fb-guard",
+      "es": "fb-guard",
+      "pl": "fb-guard",
+      "uk": "fb-guard",
+      "zh-cn": "fb-guard"
+    },
+    "desc": {
+      "en": "Security guard for your FRITZ!Box router: reports failed logins, open ports, pending firmware updates and weak settings via Telegram or e-mail",
+      "de": "Sicherheitswächter für deine FRITZ!Box: meldet fehlgeschlagene Anmeldungen, offene Ports, fehlende Firmware-Updates und unsichere Einstellungen per Telegram oder E-Mail",
+      "ru": "Охранник вашего маршрутизатора FRITZ!Box: сообщает о неудачных попытках входа в систему, открытых портах, ожидающих обновлениях прошивки и слабых настройках через Telegram или по электронной почте.",
+      "pt": "Proteção de segurança para o seu roteador FRITZ!Box: relata logins com falha, portas abertas, atualizações de firmware pendentes e configurações fracas via Telegram ou e-mail",
+      "nl": "Bewaker voor je FRITZ!Box-router: meldt mislukte logins, open poorten, lopende firmware-updates en zwakke instellingen via Telegram of e-mail",
+      "fr": "Agent de sécurité pour votre routeur FRITZ!Box : signale les échecs de connexion, les ports ouverts, les mises à jour du micrologiciel en attente et les paramètres faibles par télégramme ou par e-mail",
+      "it": "Protezione di sicurezza per il vostro router FRITZ!Box: segnala accessi non riusciti, porte aperte, aggiornamenti firmware in sospeso e impostazioni deboli tramite Telegram o e-mail",
+      "es": "Guardia de seguridad para su enrutador FRITZ!Box: informa de inicios de sesión fallidos, puertos abiertos, actualizaciones de firmware pendientes y configuraciones débiles a través de Telegram o correo electrónico",
+      "pl": "Strażnik bezpieczeństwa routera FRITZ!Box: zgłasza nieudane logowania, otwarte porty, oczekujące aktualizacje oprogramowania sprzętowego i słabe ustawienia za pośrednictwem Telegramu lub e-maila",
+      "uk": "Захист вашого маршрутизатора FRITZ!Box: повідомляє про невдалі входи, відкриті порти, незавершені оновлення прошивки та слабкі налаштування через Telegram або електронну пошту",
+      "zh-cn": "FRITZ!Box 路由器的安全卫士：通过 Telegram 或电子邮件报告登录失败、开放端口、待处理的固件更新和弱设置"
+    },
+    "authors": [
+      "Flyor <AskMe@Stonehiller.de>"
+    ],
+    "keywords": [
+      "fritzbox",
+      "fritz!box",
+      "fritz",
+      "avm",
+      "router",
+      "security",
+      "tr-064",
+      "monitoring",
+      "login"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "fb-guard.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/Flyor/ioBroker.fb-guard/main/admin/fb-guard.png",
+    "readme": "https://github.com/Flyor/ioBroker.fb-guard/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "infrastructure",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.20"
+      }
+    ],
+    "messagebox": true,
+    "nogit": true,
+    "docs": {
+      "en": "README.md",
+      "de": "docs/de/README.md"
+    }
+  },
+  "native": {
+    "host": "",
+    "username": "",
+    "password": "",
+    "useTls": true,
+    "intervalEvents": 5,
+    "intervalPorts": 60,
+    "intervalFirmware": 720,
+    "intervalSettings": 60,
+    "knownIps": "",
+    "attackThreshold": 5,
+    "alertRemoteLogins": true,
+    "alertNewDevices": false,
+    "skipKnownPrivate": true,
+    "summaryInterval": "weekly",
+    "confirmations": [],
+    "portSelfTest": true,
+    "vendorFirmwareCheck": false,
+    "telegramEnabled": false,
+    "telegramInstance": "",
+    "telegramUser": "",
+    "emailEnabled": false,
+    "emailInstance": "",
+    "emailTo": "",
+    "minSeverity": "warning",
+    "notifyResolved": false
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Information",
+          "de": "Information",
+          "ru": "Информация",
+          "pt": "Informação",
+          "nl": "Informatie",
+          "fr": "Information",
+          "it": "Informazioni",
+          "es": "Información",
+          "pl": "Informacja",
+          "uk": "Інформація",
+          "zh-cn": "信息"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Connected to FRITZ!Box",
+          "de": "Mit FRITZ!Box verbunden",
+          "ru": "Подключено к FRITZ!Box",
+          "pt": "Conectado ao FRITZ!Box",
+          "nl": "Verbonden met FRITZ!Box",
+          "fr": "Connecté à FRITZ!Box",
+          "it": "Connesso al FRITZ!Box",
+          "es": "Conectado a su FRITZ!Box",
+          "pl": "Połączono z FRITZ!Box",
+          "uk": "Підключено до FRITZ!Box",
+          "zh-cn": "连接到 FRITZ!Box"
         },
-        "titleLang": {
-            "en": "fb-guard",
-            "de": "fb-guard",
-            "ru": "fb-guard",
-            "pt": "fb-guard",
-            "nl": "fb-guard",
-            "fr": "fb-guard",
-            "it": "fb-guard",
-            "es": "fb-guard",
-            "pl": "fb-guard",
-            "uk": "fb-guard",
-            "zh-cn": "fb-guard"
-        },
+        "type": "boolean",
+        "role": "indicator.connected",
+        "read": true,
+        "write": false,
+        "def": false,
         "desc": {
-            "en": "Security guard for your FRITZ!Box router: reports failed logins, open ports, pending firmware updates and weak settings via Telegram or e-mail",
-            "de": "Sicherheitswächter für deine FRITZ!Box: meldet fehlgeschlagene Anmeldungen, offene Ports, fehlende Firmware-Updates und unsichere Einstellungen per Telegram oder E-Mail",
-            "ru": "Охранник вашего маршрутизатора FRITZ!Box: сообщает о неудачных попытках входа в систему, открытых портах, ожидающих обновлениях прошивки и слабых настройках через Telegram или по электронной почте.",
-            "pt": "Proteção de segurança para o seu roteador FRITZ!Box: relata logins com falha, portas abertas, atualizações de firmware pendentes e configurações fracas via Telegram ou e-mail",
-            "nl": "Bewaker voor je FRITZ!Box-router: meldt mislukte logins, open poorten, lopende firmware-updates en zwakke instellingen via Telegram of e-mail",
-            "fr": "Agent de sécurité pour votre routeur FRITZ!Box : signale les échecs de connexion, les ports ouverts, les mises à jour du micrologiciel en attente et les paramètres faibles par télégramme ou par e-mail",
-            "it": "Protezione di sicurezza per il vostro router FRITZ!Box: segnala accessi non riusciti, porte aperte, aggiornamenti firmware in sospeso e impostazioni deboli tramite Telegram o e-mail",
-            "es": "Guardia de seguridad para su enrutador FRITZ!Box: informa de inicios de sesión fallidos, puertos abiertos, actualizaciones de firmware pendientes y configuraciones débiles a través de Telegram o correo electrónico",
-            "pl": "Strażnik bezpieczeństwa routera FRITZ!Box: zgłasza nieudane logowania, otwarte porty, oczekujące aktualizacje oprogramowania sprzętowego i słabe ustawienia za pośrednictwem Telegramu lub e-maila",
-            "uk": "Захист вашого маршрутизатора FRITZ!Box: повідомляє про невдалі входи, відкриті порти, незавершені оновлення прошивки та слабкі налаштування через Telegram або електронну пошту",
-            "zh-cn": "FRITZ!Box 路由器的安全卫士：通过 Telegram 或电子邮件报告登录失败、开放端口、待处理的固件更新和弱设置"
-        },
-        "authors": [
-            "Flyor <AskMe@Stonehiller.de>"
-        ],
-        "keywords": [
-            "fritzbox",
-            "fritz!box",
-            "fritz",
-            "avm",
-            "router",
-            "security",
-            "tr-064",
-            "monitoring",
-            "login"
-        ],
-        "licenseInformation": {
-            "type": "free",
-            "license": "MIT"
-        },
-        "platform": "Javascript/Node.js",
-        "icon": "fb-guard.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/Flyor/ioBroker.fb-guard/main/admin/fb-guard.png",
-        "readme": "https://github.com/Flyor/ioBroker.fb-guard/blob/main/README.md",
-        "loglevel": "info",
-        "tier": 3,
-        "mode": "daemon",
-        "type": "infrastructure",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "poll",
-        "adminUI": {
-            "config": "json"
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=6.0.11"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=7.6.20"
-            }
-        ],
-        "messagebox": true,
-        "nogit": true,
-        "docs": {
-            "en": "README.md",
-            "de": "docs/de/README.md"
+          "en": "true while the adapter can talk to the box",
+          "de": "true, solange der Adapter mit der Box sprechen kann",
+          "ru": "правда, пока адаптер может общаться с коробкой",
+          "pt": "true enquanto o adaptador pode se comunicar com a caixa",
+          "nl": "waar terwijl de adapter met de box kan praten",
+          "fr": "vrai alors que l'adaptateur peut parler à la box",
+          "it": "true mentre l'adattatore può parlare con la scatola",
+          "es": "Verdadero mientras el adaptador puede comunicarse con la caja.",
+          "pl": "true, dopóki adapter może rozmawiać z pudełkiem",
+          "uk": "правда, поки адаптер може спілкуватися з коробкою",
+          "zh-cn": "当适配器可以与盒子对话时为 true"
         }
+      },
+      "native": {}
     },
-    "native": {
-        "host": "",
-        "username": "",
-        "password": "",
-        "useTls": true,
-        "intervalEvents": 5,
-        "intervalPorts": 60,
-        "intervalFirmware": 720,
-        "intervalSettings": 60,
-        "knownIps": "",
-        "attackThreshold": 5,
-        "alertRemoteLogins": true,
-        "alertNewDevices": false,
-        "skipKnownPrivate": true,
-        "summaryInterval": "weekly",
-        "confirmations": [],
-        "portSelfTest": true,
-        "vendorFirmwareCheck": false,
-        "telegramEnabled": false,
-        "telegramInstance": "",
-        "telegramUser": "",
-        "emailEnabled": false,
-        "emailInstance": "",
-        "emailTo": "",
-        "minSeverity": "warning",
-        "notifyResolved": false
-    },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Information",
-                    "de": "Information",
-                    "ru": "Информация",
-                    "pt": "Informação",
-                    "nl": "Informatie",
-                    "fr": "Information",
-                    "it": "Informazioni",
-                    "es": "Información",
-                    "pl": "Informacja",
-                    "uk": "Інформація",
-                    "zh-cn": "信息"
-                }
-            },
-            "native": {}
+    {
+      "_id": "info.lastRun",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Last full check",
+          "de": "Letzte vollständige Prüfung",
+          "ru": "Последняя полная проверка",
+          "pt": "Última verificação completa",
+          "nl": "Laatste volledige controle",
+          "fr": "Dernière vérification complète",
+          "it": "Ultimo controllo completo",
+          "es": "último control completo",
+          "pl": "Ostatnia pełna kontrola",
+          "uk": "Остання повна перевірка",
+          "zh-cn": "最后一次全面检查"
         },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Connected to FRITZ!Box",
-                    "de": "Mit FRITZ!Box verbunden",
-                    "ru": "Подключено к FRITZ!Box",
-                    "pt": "Conectado ao FRITZ!Box",
-                    "nl": "Verbonden met FRITZ!Box",
-                    "fr": "Connecté à FRITZ!Box",
-                    "it": "Connesso al FRITZ!Box",
-                    "es": "Conectado a su FRITZ!Box",
-                    "pl": "Połączono z FRITZ!Box",
-                    "uk": "Підключено до FRITZ!Box",
-                    "zh-cn": "连接到 FRITZ!Box"
-                },
-                "type": "boolean",
-                "role": "indicator.connected",
-                "read": true,
-                "write": false,
-                "def": false,
-                "desc": {
-                    "en": "true while the adapter can talk to the box",
-                    "de": "true, solange der Adapter mit der Box sprechen kann",
-                    "ru": "правда, пока адаптер может общаться с коробкой",
-                    "pt": "true enquanto o adaptador pode se comunicar com a caixa",
-                    "nl": "waar terwijl de adapter met de box kan praten",
-                    "fr": "vrai alors que l'adaptateur peut parler à la box",
-                    "it": "true mentre l'adattatore può parlare con la scatola",
-                    "es": "Verdadero mientras el adaptador puede comunicarse con la caja.",
-                    "pl": "true, dopóki adapter może rozmawiać z pudełkiem",
-                    "uk": "правда, поки адаптер може спілкуватися з коробкою",
-                    "zh-cn": "当适配器可以与盒子对话时为 true"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.lastRun",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Last full check",
-                    "de": "Letzte vollständige Prüfung",
-                    "ru": "Последняя полная проверка",
-                    "pt": "Última verificação completa",
-                    "nl": "Laatste volledige controle",
-                    "fr": "Dernière vérification complète",
-                    "it": "Ultimo controllo completo",
-                    "es": "último control completo",
-                    "pl": "Ostatnia pełna kontrola",
-                    "uk": "Остання повна перевірка",
-                    "zh-cn": "最后一次全面检查"
-                },
-                "type": "number",
-                "role": "value.time",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Time of the last complete run of all checks",
-                    "de": "Zeitpunkt, an dem zuletzt alle Prüfungen gelaufen sind",
-                    "ru": "Время последнего полного выполнения всех проверок",
-                    "pt": "Hora da última execução completa de todas as verificações",
-                    "nl": "Tijdstip van de laatste volledige uitvoering van alle controles",
-                    "fr": "Heure de la dernière exécution complète de tous les contrôles",
-                    "it": "Ora dell'ultima esecuzione completa di tutti i controlli",
-                    "es": "Hora de la última ejecución completa de todas las comprobaciones",
-                    "pl": "Godzina ostatniego pełnego przebiegu wszystkich kontroli",
-                    "uk": "Час останнього повного виконання всіх перевірок",
-                    "zh-cn": "最后一次完整运行所有检查的时间"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.model",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Model",
-                    "de": "Modell",
-                    "ru": "Модель",
-                    "pt": "Modelo",
-                    "nl": "Model",
-                    "fr": "Modèle",
-                    "it": "Modello",
-                    "es": "Modelo",
-                    "pl": "Model",
-                    "uk": "Модель",
-                    "zh-cn": "模型"
-                },
-                "type": "string",
-                "role": "info.model",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Model reported by the box",
-                    "de": "Von der Box gemeldetes Modell",
-                    "ru": "Модель указана на коробке",
-                    "pt": "Modelo relatado pela caixa",
-                    "nl": "Model gerapporteerd door de doos",
-                    "fr": "Modèle rapporté par la boite",
-                    "it": "Modello segnalato dalla scatola",
-                    "es": "Modelo reportado por la caja.",
-                    "pl": "Model zgłoszony przez pudełko",
-                    "uk": "Модель повідомляє коробка",
-                    "zh-cn": "盒子报告的型号"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.uptime",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Uptime of the box",
-                    "de": "Laufzeit der Box",
-                    "ru": "Время работы коробки",
-                    "pt": "Tempo de atividade da caixa",
-                    "nl": "Uptime van de doos",
-                    "fr": "Disponibilité de la box",
-                    "it": "Tempo di attività della scatola",
-                    "es": "Tiempo de actividad de la caja",
-                    "pl": "Czas działania pudełka",
-                    "uk": "Час роботи коробки",
-                    "zh-cn": "盒子的正常运行时间"
-                },
-                "type": "number",
-                "role": "value.interval",
-                "read": true,
-                "write": false,
-                "unit": "s",
-                "desc": {
-                    "en": "Seconds since the last restart of the box. Drops to a small value after a restart.",
-                    "de": "Sekunden seit dem letzten Neustart der Box. Fällt nach einem Neustart auf einen kleinen Wert.",
-                    "ru": "Секунды с момента последнего перезапуска коробки. Падает до небольшого значения после перезапуска.",
-                    "pt": "Segundos desde a última reinicialização da caixa. Cai para um valor pequeno após uma reinicialização.",
-                    "nl": "Seconden sinds de laatste herstart van de box. Daalt naar een kleine waarde na een herstart.",
-                    "fr": "Secondes depuis le dernier redémarrage de la box. Tombe à une petite valeur après un redémarrage.",
-                    "it": "Secondi dall'ultimo riavvio del box. Scende a un valore basso dopo il riavvio.",
-                    "es": "Segundos desde el último reinicio del box. Cae a un valor pequeño después de un reinicio.",
-                    "pl": "Sekundy od ostatniego ponownego uruchomienia urządzenia. Po ponownym uruchomieniu spada do małej wartości.",
-                    "uk": "Секунд з моменту останнього перезапуску коробки. Падає до невеликого значення після перезапуску.",
-                    "zh-cn": "自上次重新启动盒子以来的秒数。重新启动后下降到一个较小的值。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.certFingerprint",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Trusted TLS certificate (SHA-256)",
-                    "de": "Vertrautes TLS-Zertifikat (SHA-256)",
-                    "ru": "Доверенный сертификат TLS (SHA-256)",
-                    "pt": "Certificado TLS confiável (SHA-256)",
-                    "nl": "Vertrouwd TLS-certificaat (SHA-256)",
-                    "fr": "Certificat TLS de confiance (SHA-256)",
-                    "it": "Certificato TLS affidabile (SHA-256)",
-                    "es": "Certificado TLS de confianza (SHA-256)",
-                    "pl": "Zaufany certyfikat TLS (SHA-256)",
-                    "uk": "Довірений сертифікат TLS (SHA-256)",
-                    "zh-cn": "可信 TLS 证书 (SHA-256)"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Fingerprint of the box certificate trusted on first contact. If the box shows a different one, the adapter stops and warns.",
-                    "de": "Fingerabdruck des Box-Zertifikats, dem beim ersten Kontakt vertraut wurde. Zeigt die Box ein anderes, stoppt der Adapter und warnt.",
-                    "ru": "Отпечаток пальца сертификата коробки, которому доверяют при первом контакте. Если в поле указано другое, адаптер останавливается и предупреждает.",
-                    "pt": "Impressão digital do certificado da caixa confiável no primeiro contato. Se a caixa mostrar um diferente, o adaptador para e avisa.",
-                    "nl": "Vingerafdruk van het boxcertificaat dat bij het eerste contact werd vertrouwd. Als het vakje een ander exemplaar toont, stopt de adapter en waarschuwt.",
-                    "fr": "Empreinte digitale du certificat de la boîte approuvée au premier contact. Si la case en affiche un autre, l'adaptateur s'arrête et avertit.",
-                    "it": "Impronta digitale del certificato della scatola attendibile al primo contatto. Se la casella ne mostra uno diverso, l'adattatore si ferma e avvisa.",
-                    "es": "Huella digital del certificado de caja confiable en el primer contacto. Si el cuadro muestra uno diferente, el adaptador se detiene y avisa.",
-                    "pl": "Odcisk palca certyfikatu pudełka zaufany przy pierwszym kontakcie. Jeśli na pudełku widnieje inny, adapter zatrzymuje się i ostrzega.",
-                    "uk": "Відбиток пальця сертифіката коробки довірено під час першого контакту. Якщо в полі показано інше, адаптер зупиняється та попереджає.",
-                    "zh-cn": "第一次接触时信任的盒子证书指纹。如果该框显示不同的内容，适配器就会停止并发出警告。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.diagnostics",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Diagnostics (secrets masked)",
-                    "de": "Diagnose (Geheimnisse geschwärzt)",
-                    "ru": "Диагностика (секреты замаскированы)",
-                    "pt": "Diagnóstico (segredos mascarados)",
-                    "nl": "Diagnostiek (geheimen gemaskeerd)",
-                    "fr": "Diagnostics (secrets masqués)",
-                    "it": "Diagnostica (segreti mascherati)",
-                    "es": "Diagnóstico (secretos enmascarados)",
-                    "pl": "Diagnostyka (tajemnice zamaskowane)",
-                    "uk": "Діагностика (секрети замасковані)",
-                    "zh-cn": "诊断（隐藏的秘密）"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Result of the diagnostics button. Passwords, names and addresses are masked as far as possible. Read it before you share it.",
-                    "de": "Ergebnis des Diagnose-Knopfs. Kennwörter, Namen und Adressen sind so weit wie möglich geschwärzt. Vor dem Teilen selbst durchlesen.",
-                    "ru": "Результат кнопки диагностики. Пароли, имена и адреса маскируются, насколько это возможно. Прочтите, прежде чем поделиться.",
-                    "pt": "Resultado do botão de diagnóstico. Senhas, nomes e endereços são mascarados tanto quanto possível. Leia antes de compartilhar.",
-                    "nl": "Resultaat van de diagnoseknop. Wachtwoorden, namen en adressen worden zoveel mogelijk gemaskeerd. Lees het voordat je het deelt.",
-                    "fr": "Résultat du bouton de diagnostic. Les mots de passe, noms et adresses sont masqués dans la mesure du possible. Lisez-le avant de le partager.",
-                    "it": "Risultato del pulsante di diagnostica. Password, nomi e indirizzi vengono mascherati il ​​più possibile. Leggilo prima di condividerlo.",
-                    "es": "Resultado del botón de diagnóstico. Las contraseñas, nombres y direcciones están enmascarados en la medida de lo posible. Léelo antes de compartirlo.",
-                    "pl": "Wynik przycisku diagnostycznego. Hasła, nazwy i adresy są maskowane w miarę możliwości. Przeczytaj zanim udostępnisz.",
-                    "uk": "Результат дії кнопки діагностики. Паролі, імена та адреси максимально маскуються. Прочитайте його, перш ніж поділитися ним.",
-                    "zh-cn": "诊断按钮的结果。密码、姓名和地址均被尽可能隐藏。在分享之前先阅读它。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "summary",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Summary",
-                    "de": "Zusammenfassung",
-                    "ru": "Краткое содержание",
-                    "pt": "Resumo",
-                    "nl": "Samenvatting",
-                    "fr": "Résumé",
-                    "it": "Riepilogo",
-                    "es": "Resumen",
-                    "pl": "Streszczenie",
-                    "uk": "Резюме",
-                    "zh-cn": "概括"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "summary.score",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Security score (0-100)",
-                    "de": "Sicherheitswert (0-100)",
-                    "ru": "Оценка безопасности (0-100)",
-                    "pt": "Pontuação de segurança (0-100)",
-                    "nl": "Beveiligingsscore (0-100)",
-                    "fr": "Score de sécurité (0-100)",
-                    "it": "Punteggio di sicurezza (0-100)",
-                    "es": "Puntuación de seguridad (0-100)",
-                    "pl": "Wynik bezpieczeństwa (0-100)",
-                    "uk": "Оцінка безпеки (0-100)",
-                    "zh-cn": "安全评分（0-100）"
-                },
-                "type": "number",
-                "role": "value",
-                "read": true,
-                "write": false,
-                "min": 0,
-                "max": 100,
-                "desc": {
-                    "en": "100 = nothing found. Each open critical finding costs 25 points, each warning 10. Hints do not count.",
-                    "de": "100 = nichts gefunden. Jeder offene kritische Fund kostet 25 Punkte, jede Warnung 10. Hinweise zählen nicht.",
-                    "ru": "100 = ничего не найдено. Каждое открытое критическое открытие стоит 25 очков, каждое предупреждение — 10. Подсказки не засчитываются.",
-                    "pt": "100 = nada encontrado. Cada descoberta crítica aberta custa 25 pontos, cada aviso 10. As dicas não contam.",
-                    "nl": "100 = niets gevonden. Elke open kritische bevinding kost 25 punten, elke waarschuwing 10. Hints tellen niet mee.",
-                    "fr": "100 = rien trouvé. Chaque découverte critique ouverte coûte 25 points, chaque avertissement 10. Les indices ne comptent pas.",
-                    "it": "100 = niente trovato. Ogni scoperta critica aperta costa 25 punti, ogni avvertimento 10. I suggerimenti non contano.",
-                    "es": "100 = no se encontró nada. Cada hallazgo crítico abierto cuesta 25 puntos, cada advertencia 10. Las pistas no cuentan.",
-                    "pl": "100 = nic nie znaleziono. Każde otwarte znalezisko krytyczne kosztuje 25 punktów, każde ostrzeżenie 10. Wskazówki się nie liczą.",
-                    "uk": "100 = нічого не знайдено. Кожна відкрита критична знахідка коштує 25 балів, кожне попередження 10. Підказки не зараховуються.",
-                    "zh-cn": "100 = 未找到任何内容。每个公开的关键发现需要 25 分，每个警告需要 10 分。提示不算在内。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "summary.text",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Open findings as text",
-                    "de": "Offene Punkte als Text",
-                    "ru": "Открыть выводы в виде текста",
-                    "pt": "Abrir descobertas como texto",
-                    "nl": "Open bevindingen als tekst",
-                    "fr": "Ouvrir les résultats sous forme de texte",
-                    "it": "Apri i risultati come testo",
-                    "es": "Abrir resultados como texto",
-                    "pl": "Otwórz wyniki jako tekst",
-                    "uk": "Відкрийте знахідки як текст",
-                    "zh-cn": "以文本形式打开调查结果"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Open findings as readable text, e.g. for a VIS widget",
-                    "de": "Offene Funde als lesbarer Text, z. B. für ein VIS-Widget",
-                    "ru": "Открыть результаты в виде читаемого текста, например. для виджета VIS",
-                    "pt": "Abra as descobertas como texto legível, por ex. para um widget VIS",
-                    "nl": "Open bevindingen als leesbare tekst, b.v. voor een VIS-widget",
-                    "fr": "Ouvrir les résultats sous forme de texte lisible, par ex. pour un widget VIS",
-                    "it": "Apri i risultati come testo leggibile, ad es. per un widget VIS",
-                    "es": "Abrir los resultados como texto legible, p. para un widget VIS",
-                    "pl": "Otwórz wyniki w formie czytelnego tekstu, np. dla widżetu VIS",
-                    "uk": "Відкрити висновки як читабельний текст, напр. для віджета VIS",
-                    "zh-cn": "以可读文本的形式打开调查结果，例如对于 VIS 小部件"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Findings",
-                    "de": "Funde",
-                    "ru": "Выводы",
-                    "pt": "Descobertas",
-                    "nl": "Bevindingen",
-                    "fr": "Résultats",
-                    "it": "Risultati",
-                    "es": "Recomendaciones",
-                    "pl": "Ustalenia",
-                    "uk": "Висновки",
-                    "zh-cn": "发现"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.json",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "All findings (JSON)",
-                    "de": "Alle Funde (JSON)",
-                    "ru": "Все результаты (JSON)",
-                    "pt": "Todas as descobertas (JSON)",
-                    "nl": "Alle bevindingen (JSON)",
-                    "fr": "Tous les résultats (JSON)",
-                    "it": "Tutti i risultati (JSON)",
-                    "es": "Todos los hallazgos (JSON)",
-                    "pl": "Wszystkie wyniki (JSON)",
-                    "uk": "Усі знахідки (JSON)",
-                    "zh-cn": "所有结果 (JSON)"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "All current findings with id, severity, explanation and advice (JSON)",
-                    "de": "Alle aktuellen Funde mit ID, Schwere, Erklärung und Empfehlung (JSON)",
-                    "ru": "Все текущие результаты с идентификатором, серьезностью, пояснениями и советами (JSON)",
-                    "pt": "Todas as descobertas atuais com id, gravidade, explicação e conselhos (JSON)",
-                    "nl": "Alle actuele bevindingen met id, ernst, uitleg en advies (JSON)",
-                    "fr": "Tous les résultats actuels avec identifiant, gravité, explication et conseils (JSON)",
-                    "it": "Tutti i risultati attuali con ID, gravità, spiegazione e consigli (JSON)",
-                    "es": "Todos los hallazgos actuales con identificación, gravedad, explicación y consejos (JSON)",
-                    "pl": "Wszystkie aktualne ustalenia z identyfikatorem, wagą, wyjaśnieniem i poradą (JSON)",
-                    "uk": "Усі поточні результати з ідентифікатором, серйозністю, поясненнями та порадами (JSON)",
-                    "zh-cn": "所有当前发现的 ID、严重性、解释和建议 (JSON)"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.confirmationsApplied",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Confirmations from the settings table (internal)",
-                    "de": "Bestätigungen aus der Tabelle in den Einstellungen (intern)",
-                    "ru": "Подтверждения из таблицы настроек (внутренние)",
-                    "pt": "Confirmações da tabela de configurações (internas)",
-                    "nl": "Bevestigingen uit de instellingentabel (intern)",
-                    "fr": "Confirmations du tableau des paramètres (interne)",
-                    "it": "Conferme dalla tabella delle impostazioni (interna)",
-                    "es": "Confirmaciones de la tabla de configuración (interna)",
-                    "pl": "Potwierdzenia z tabeli ustawień (wewnętrzne)",
-                    "uk": "Підтвердження з таблиці налаштувань (внутрішні)",
-                    "zh-cn": "来自设置表的确认（内部）"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Ticks of the settings table last applied, so later changes can be told apart",
-                    "de": "Zuletzt übernommene Haken der Tabelle, um spätere Änderungen zu erkennen",
-                    "ru": "Отметки таблицы настроек применялись последними, поэтому последующие изменения можно отличить друг от друга.",
-                    "pt": "Marcações da tabela de configurações aplicadas pela última vez, para que alterações posteriores possam ser diferenciadas",
-                    "nl": "Vinkjes van de instellingentabel laatst toegepast, zodat latere wijzigingen uit elkaar kunnen worden gehouden",
-                    "fr": "Coches du tableau des paramètres appliqué en dernier lieu, afin que les modifications ultérieures puissent être distinguées",
-                    "it": "I segni di spunta della tabella delle impostazioni sono stati applicati per ultimi, in modo che le modifiche successive possano essere distinte",
-                    "es": "Los ticks de la tabla de configuración se aplicaron por última vez, por lo que los cambios posteriores se pueden diferenciar",
-                    "pl": "Ostatnio zastosowano znaczniki z tabeli ustawień, dzięki czemu późniejsze zmiany można rozróżnić",
-                    "uk": "Галочки в таблиці налаштувань застосовано останнім часом, тому пізніші зміни можна розрізнити",
-                    "zh-cn": "最后应用的设置表的刻度，以便可以区分以后的更改"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.open",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Open findings",
-                    "de": "Offene Funde",
-                    "ru": "Открытые выводы",
-                    "pt": "Descobertas abertas",
-                    "nl": "Bevindingen openen",
-                    "fr": "Résultats ouverts",
-                    "it": "Risultati aperti",
-                    "es": "Hallazgos abiertos",
-                    "pl": "Otwarte ustalenia",
-                    "uk": "Відкриті знахідки",
-                    "zh-cn": "开放调查结果"
-                },
-                "type": "number",
-                "role": "value",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Number of findings that are not confirmed",
-                    "de": "Anzahl der Funde, die nicht bestätigt sind",
-                    "ru": "Количество выводов, которые не подтверждены",
-                    "pt": "Número de descobertas que não foram confirmadas",
-                    "nl": "Aantal bevindingen dat niet is bevestigd",
-                    "fr": "Nombre de résultats non confirmés",
-                    "it": "Numero di risultati non confermati",
-                    "es": "Número de hallazgos que no están confirmados",
-                    "pl": "Liczba ustaleń, które nie zostały potwierdzone",
-                    "uk": "Кількість висновків, які не підтверджені",
-                    "zh-cn": "未证实的调查结果数量"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.critical",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Critical findings",
-                    "de": "Kritische Funde",
-                    "ru": "Критические выводы",
-                    "pt": "Descobertas críticas",
-                    "nl": "Kritische bevindingen",
-                    "fr": "Résultats critiques",
-                    "it": "Risultati critici",
-                    "es": "Hallazgos críticos",
-                    "pl": "Krytyczne ustalenia",
-                    "uk": "Критичні висновки",
-                    "zh-cn": "重要发现"
-                },
-                "type": "number",
-                "role": "value",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Number of open critical findings",
-                    "de": "Anzahl der offenen kritischen Funde",
-                    "ru": "Количество открытых критических выводов",
-                    "pt": "Número de descobertas críticas abertas",
-                    "nl": "Aantal openstaande kritische bevindingen",
-                    "fr": "Nombre de conclusions critiques ouvertes",
-                    "it": "Numero di rilievi critici aperti",
-                    "es": "Número de hallazgos críticos abiertos",
-                    "pl": "Liczba otwartych ustaleń krytycznych",
-                    "uk": "Кількість відкритих критичних висновків",
-                    "zh-cn": "公开的关键发现数量"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.acknowledge",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Confirm finding (enter id)",
-                    "de": "Fund bestätigen (ID eintragen)",
-                    "ru": "Подтвердите поиск (введите идентификатор)",
-                    "pt": "Confirme a descoberta (insira o ID)",
-                    "nl": "Bevinding bevestigen (ID invoeren)",
-                    "fr": "Confirmer la recherche (entrer l'identifiant)",
-                    "it": "Conferma la ricerca (inserisci l'ID)",
-                    "es": "Confirmar hallazgo (ingrese ID)",
-                    "pl": "Potwierdź znalezienie (wprowadź identyfikator)",
-                    "uk": "Підтвердити знахідку (введіть id)",
-                    "zh-cn": "确认发现（输入id）"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": true,
-                "desc": {
-                    "en": "Write the id of a finding here to mark it as intended. Easier: tab \"Findings\" in the adapter settings.",
-                    "de": "ID eines Fundes hier eintragen, um ihn als gewollt zu markieren. Einfacher: Reiter \"Funde\" in den Adapter-Einstellungen.",
-                    "ru": "Напишите здесь идентификатор находки, чтобы отметить ее как предназначенную. Проще: вкладка «Выводы» в настройках адаптера.",
-                    "pt": "Escreva o ID de uma descoberta aqui para marcá-la como pretendido. Mais fácil: aba \"Descobertas\" nas configurações do adaptador.",
-                    "nl": "Schrijf hier de ID van een bevinding om deze te markeren zoals bedoeld. Makkelijker: tabblad \"Bevindingen\" in de adapterinstellingen.",
-                    "fr": "Écrivez ici l'identifiant d'une découverte pour la marquer comme prévu. Plus simple : onglet \"Résultats\" dans les paramètres de l'adaptateur.",
-                    "it": "Scrivi qui l'ID di una scoperta per contrassegnarla come prevista. Più semplice: scheda \"Risultati\" nelle impostazioni dell'adattatore.",
-                    "es": "Escriba aquí la identificación de un hallazgo para marcarlo según lo previsto. Más fácil: pestaña \"Hallazgos\" en la configuración del adaptador.",
-                    "pl": "Wpisz tutaj identyfikator wyniku, aby oznaczyć go zgodnie z przeznaczeniem. Łatwiej: zakładka „Wyniki” w ustawieniach adaptera.",
-                    "uk": "Напишіть тут ідентифікатор знахідки, щоб позначити її як призначену. Простіше: вкладка «Знахідки» в налаштуваннях адаптера.",
-                    "zh-cn": "在此处写下结果的 ID 以将其标记为预期的。更简单：在适配器设置中选项卡“发现”。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "findings.unacknowledge",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Undo confirmation (enter id)",
-                    "de": "Bestätigung zurücknehmen (ID eintragen)",
-                    "ru": "Отменить подтверждение (ввести идентификатор)",
-                    "pt": "Desfazer confirmação (inserir id)",
-                    "nl": "Bevestiging ongedaan maken (ID invoeren)",
-                    "fr": "Annuler la confirmation (entrez l'identifiant)",
-                    "it": "Conferma annullamento (inserisci ID)",
-                    "es": "Deshacer confirmación (ingrese id)",
-                    "pl": "Cofnij potwierdzenie (wprowadź identyfikator)",
-                    "uk": "Скасувати підтвердження (введіть ідентифікатор)",
-                    "zh-cn": "撤消确认（输入 ID）"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": true,
-                "desc": {
-                    "en": "Write the id of a confirmed finding here to report it again",
-                    "de": "ID eines bestätigten Fundes hier eintragen, damit er wieder gemeldet wird",
-                    "ru": "Напишите здесь идентификатор подтвержденного результата, чтобы сообщить об этом еще раз.",
-                    "pt": "Escreva aqui o ID de uma descoberta confirmada para relatá-la novamente",
-                    "nl": "Schrijf hier de ID van een bevestigde bevinding om deze opnieuw te melden",
-                    "fr": "Écrivez ici l'identifiant d'une découverte confirmée pour la signaler à nouveau",
-                    "it": "Scrivi qui l'id di un risultato confermato per segnalarlo nuovamente",
-                    "es": "Escribe aquí el id de un hallazgo confirmado para reportarlo nuevamente",
-                    "pl": "Wpisz tutaj identyfikator potwierdzonego ustalenia, aby zgłosić je ponownie",
-                    "uk": "Напишіть тут ідентифікатор підтвердженої знахідки, щоб повідомити про неї знову",
-                    "zh-cn": "在此写下已确认发现的 ID 以再次报告"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "events",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Event log",
-                    "de": "Ereignisprotokoll",
-                    "ru": "Журнал событий",
-                    "pt": "Registro de eventos",
-                    "nl": "Gebeurtenislogboek",
-                    "fr": "Journal des événements",
-                    "it": "Registro eventi",
-                    "es": "Registro de eventos",
-                    "pl": "Dziennik zdarzeń",
-                    "uk": "Журнал подій",
-                    "zh-cn": "事件日志"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "events.seen",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Processed log entries",
-                    "de": "Verarbeitete Protokolleinträge",
-                    "ru": "Обработанные записи журнала",
-                    "pt": "Entradas de registro processadas",
-                    "nl": "Verwerkte loggegevens",
-                    "fr": "Entrées de journal traitées",
-                    "it": "Voci di registro elaborate",
-                    "es": "Entradas de registro procesadas",
-                    "pl": "Przetworzone wpisy dziennika",
-                    "uk": "Оброблені записи журналу",
-                    "zh-cn": "已处理的日志条目"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Internal: ids of log entries already processed, so nothing is reported twice",
-                    "de": "Intern: IDs bereits verarbeiteter Protokolleinträge, damit nichts doppelt gemeldet wird",
-                    "ru": "Внутренний: идентификаторы записей журнала уже обработаны, поэтому дважды ничего не сообщается.",
-                    "pt": "Interno: ids de entradas de log já processadas, portanto nada é relatado duas vezes",
-                    "nl": "Intern: ID's van loggegevens die al zijn verwerkt, dus er wordt niets dubbel gerapporteerd",
-                    "fr": "Interne : identifiants des entrées de journal déjà traitées, donc rien n'est signalé deux fois",
-                    "it": "Interno: ID delle voci di registro già elaborate, quindi nulla viene segnalato due volte",
-                    "es": "Interno: los identificadores de las entradas del registro ya se procesaron, por lo que no se informa nada dos veces",
-                    "pl": "Wewnętrzne: identyfikatory wpisów dziennika już przetworzonych, więc nic nie jest raportowane dwukrotnie",
-                    "uk": "Внутрішній: ідентифікатори записів журналу вже оброблено, тому нічого не повідомляється двічі",
-                    "zh-cn": "内部：日志条目的 ID 已处理，因此不会报告两次"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "events.failedLogins24h",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Failed logins (24 h)",
-                    "de": "Fehlgeschlagene Anmeldungen (24 h)",
-                    "ru": "Неудачные входы (24 часа)",
-                    "pt": "Logins com falha (24 horas)",
-                    "nl": "Mislukte aanmeldingen (24 uur)",
-                    "fr": "Échec de connexion (24 h)",
-                    "it": "Accessi non riusciti (24 ore)",
-                    "es": "Inicios de sesión fallidos (24 h)",
-                    "pl": "Nieudane logowanie (24 h)",
-                    "uk": "Невдалі входи (24 години)",
-                    "zh-cn": "登录失败（24 小时）"
-                },
-                "type": "number",
-                "role": "value",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Failed login attempts at the box in the last 24 hours (repeats counted)",
-                    "de": "Fehlgeschlagene Anmeldeversuche an der Box in den letzten 24 Stunden (Wiederholungen mitgezählt)",
-                    "ru": "Неудачные попытки входа в ящик за последние 24 часа (повторения засчитываются)",
-                    "pt": "Tentativas de login malsucedidas na caixa nas últimas 24 horas (repetições contadas)",
-                    "nl": "Mislukte inlogpogingen bij de box in de afgelopen 24 uur (herhalingen geteld)",
-                    "fr": "Échec des tentatives de connexion à la box au cours des dernières 24 heures (répétitions comptées)",
-                    "it": "Tentativi di accesso non riusciti alla casella nelle ultime 24 ore (ripetizioni conteggiate)",
-                    "es": "Intentos fallidos de inicio de sesión en el buzón en las últimas 24 horas (se cuentan las repeticiones)",
-                    "pl": "Nieudane próby logowania do skrzynki w ciągu ostatnich 24 godzin (liczone powtórzenia)",
-                    "uk": "Невдалі спроби входу в скриньку за останні 24 години (враховано повтори)",
-                    "zh-cn": "过去 24 小时内尝试登录失败的次数（重复计数）"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "events.lastFailedLogin",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Last failed login",
-                    "de": "Letzte fehlgeschlagene Anmeldung",
-                    "ru": "Последний неудачный вход в систему",
-                    "pt": "Último login com falha",
-                    "nl": "Laatste mislukte aanmelding",
-                    "fr": "Dernière connexion échouée",
-                    "it": "Ultimo accesso non riuscito",
-                    "es": "Último inicio de sesión fallido",
-                    "pl": "Ostatnie nieudane logowanie",
-                    "uk": "Останній невдалий вхід",
-                    "zh-cn": "上次登录失败"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Most recent failed login: time, source address, user, access way and original message (JSON)",
-                    "de": "Letzte fehlgeschlagene Anmeldung: Zeit, Absender-Adresse, Benutzer, Zugangsweg und Originalmeldung (JSON)",
-                    "ru": "Последний неудачный вход в систему: время, исходный адрес, пользователь, способ доступа и исходное сообщение (JSON).",
-                    "pt": "Login com falha mais recente: hora, endereço de origem, usuário, forma de acesso e mensagem original (JSON)",
-                    "nl": "Meest recente mislukte login: tijd, bronadres, gebruiker, toegangsweg en origineel bericht (JSON)",
-                    "fr": "Échec de connexion le plus récent : heure, adresse source, utilisateur, mode d'accès et message d'origine (JSON)",
-                    "it": "Accesso non riuscito più recente: ora, indirizzo di origine, utente, modalità di accesso e messaggio originale (JSON)",
-                    "es": "Inicio de sesión fallido más reciente: hora, dirección de origen, usuario, forma de acceso y mensaje original (JSON)",
-                    "pl": "Ostatnie nieudane logowanie: czas, adres źródłowy, użytkownik, sposób dostępu i oryginalna wiadomość (JSON)",
-                    "uk": "Останній невдалий вхід: час, адреса джерела, користувач, спосіб доступу та оригінальне повідомлення (JSON)",
-                    "zh-cn": "最近一次登录失败：时间、源地址、用户、访问方式、原始消息（JSON）"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "ports",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Exposure",
-                    "de": "Erreichbarkeit",
-                    "ru": "Контакт",
-                    "pt": "Exposição",
-                    "nl": "Blootstelling",
-                    "fr": "Exposition",
-                    "it": "Esposizione",
-                    "es": "Exposición",
-                    "pl": "Narażenie",
-                    "uk": "Контакт",
-                    "zh-cn": "接触"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "ports.json",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Open ports (JSON)",
-                    "de": "Offene Ports (JSON)",
-                    "ru": "Открытые порты (JSON)",
-                    "pt": "Portas abertas (JSON)",
-                    "nl": "Open poorten (JSON)",
-                    "fr": "Ports ouverts (JSON)",
-                    "it": "Porte aperte (JSON)",
-                    "es": "Puertos abiertos (JSON)",
-                    "pl": "Otwarte porty (JSON)",
-                    "uk": "Відкриті порти (JSON)",
-                    "zh-cn": "开放端口 (JSON)"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Everything reachable from the internet: port forwardings, remote access, MyFRITZ, FTP, TR-069, with explanation (JSON)",
-                    "de": "Alles, was aus dem Internet erreichbar ist: Portfreigaben, Fernzugang, MyFRITZ, FTP, TR-069, mit Erklärung (JSON)",
-                    "ru": "Все, что доступно из Интернета: переадресация портов, удаленный доступ, MyFRITZ, FTP, TR-069, с пояснениями (JSON).",
-                    "pt": "Tudo acessível pela internet: encaminhamento de porta, acesso remoto, MyFRITZ, FTP, TR-069, com explicação (JSON)",
-                    "nl": "Alles bereikbaar vanaf internet: port forwardings, toegang op afstand, MyFRITZ, FTP, TR-069, met uitleg (JSON)",
-                    "fr": "Tout accessible depuis Internet : redirections de ports, accès à distance, MyFRITZ, FTP, TR-069, avec explication (JSON)",
-                    "it": "Tutto raggiungibile da Internet: port forwarding, accesso remoto, MyFRITZ, FTP, TR-069, con spiegazione (JSON)",
-                    "es": "Todo accesible desde Internet: reenvío de puertos, acceso remoto, MyFRITZ, FTP, TR-069, con explicación (JSON)",
-                    "pl": "Wszystko dostępne z Internetu: przekierowanie portów, dostęp zdalny, MyFRITZ, FTP, TR-069, z objaśnieniami (JSON)",
-                    "uk": "Все, що доступно з Інтернету: переадресація портів, віддалений доступ, MyFRITZ, FTP, TR-069, з поясненням (JSON)",
-                    "zh-cn": "可通过互联网访问的所有内容：端口转发、远程访问、MyFRITZ、FTP、TR-069，并附有说明 (JSON)"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "ports.wanIp",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "WAN IP of the box",
-                    "de": "WAN-IP der Box",
-                    "ru": "WAN IP коробки",
-                    "pt": "WAN IP da caixa",
-                    "nl": "WAN IP van de box",
-                    "fr": "IP WAN de la box",
-                    "it": "IP WAN della scatola",
-                    "es": "IP WAN de la caja",
-                    "pl": "IP WAN skrzynki",
-                    "uk": "WAN IP коробки",
-                    "zh-cn": "盒子的WAN IP"
-                },
-                "type": "string",
-                "role": "info.ip",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "External IPv4 address of the box. Differs from your public address if another router or the provider sits in between.",
-                    "de": "Externe IPv4-Adresse der Box. Weicht von der öffentlichen Adresse ab, wenn ein weiterer Router oder der Anbieter dazwischen sitzt.",
-                    "ru": "Внешний IPv4-адрес ящика. Отличается от вашего публичного адреса, если между ним находится другой маршрутизатор или провайдер.",
-                    "pt": "Endereço IPv4 externo da caixa. Difere do seu endereço público se outro roteador ou provedor estiver entre eles.",
-                    "nl": "Extern IPv4-adres van de box. Verschilt van uw openbare adres als er een andere router of provider tussen zit.",
-                    "fr": "Adresse IPv4 externe de la box. Diffère de votre adresse publique si un autre routeur ou le fournisseur se situe entre les deux.",
-                    "it": "Indirizzo IPv4 esterno della scatola. Differisce dal tuo indirizzo pubblico se nel mezzo si trova un altro router o il provider.",
-                    "es": "Dirección IPv4 externa de la caja. Se diferencia de su dirección pública si hay otro enrutador o el proveedor en el medio.",
-                    "pl": "Zewnętrzny adres IPv4 urządzenia. Różni się od Twojego adresu publicznego, jeśli pomiędzy nimi znajduje się inny router lub dostawca.",
-                    "uk": "Зовнішня IPv4 адреса скриньки. Відрізняється від вашої публічної адреси, якщо інший маршрутизатор або провайдер знаходиться між ними.",
-                    "zh-cn": "盒子的外部 IPv4 地址。如果中间有另一个路由器或提供商，则与您的公共地址不同。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "settings",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Settings",
-                    "de": "Einstellungen",
-                    "ru": "Настройки",
-                    "pt": "Configurações",
-                    "nl": "Instellingen",
-                    "fr": "Paramètres",
-                    "it": "Impostazioni",
-                    "es": "Ajustes",
-                    "pl": "Ustawienia",
-                    "uk": "Налаштування",
-                    "zh-cn": "设置"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "settings.knownUsers",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Known box users",
-                    "de": "Bekannte Box-Benutzer",
-                    "ru": "Известные пользователи бокса",
-                    "pt": "Usuários de caixa conhecidos",
-                    "nl": "Bekende boxgebruikers",
-                    "fr": "Utilisateurs de box connus",
-                    "it": "Utenti di box conosciuti",
-                    "es": "Usuarios de caja conocidos",
-                    "pl": "Znani użytkownicy skrzynek",
-                    "uk": "Відомі користувачі скриньки",
-                    "zh-cn": "已知盒子用户"
-                },
-                "type": "string",
-                "role": "json",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Box users seen so far. A new user on the box is reported.",
-                    "de": "Bisher bekannte Box-Benutzer. Ein neuer Benutzer auf der Box wird gemeldet.",
-                    "ru": "Пользователи Box видели до сих пор. Сообщается о новом пользователе на ящике.",
-                    "pt": "Usuários do Box vistos até agora. Um novo usuário na caixa é relatado.",
-                    "nl": "Box-gebruikers tot nu toe gezien. Er wordt een nieuwe gebruiker op de box gerapporteerd.",
-                    "fr": "Utilisateurs de Box vus jusqu'à présent. Un nouvel utilisateur sur la box est signalé.",
-                    "it": "Utenti Box visti finora. Viene segnalato un nuovo utente sulla casella.",
-                    "es": "Usuarios de Box vistos hasta ahora. Se informa un nuevo usuario en el cuadro.",
-                    "pl": "Użytkownicy Boxa widzieli do tej pory. Zgłoszono nowego użytkownika skrzynki.",
-                    "uk": "Користувачі Box, яких бачили на даний момент. Повідомляється про нового користувача на ящику.",
-                    "zh-cn": "Box 用户到目前为止看到的。报告盒子上有一个新用户。"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "firmware",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Firmware",
-                    "de": "Firmware",
-                    "ru": "Прошивка",
-                    "pt": "Firmware",
-                    "nl": "Firmware",
-                    "fr": "Micrologiciel",
-                    "it": "Firmware",
-                    "es": "firmware",
-                    "pl": "Oprogramowanie sprzętowe",
-                    "uk": "Прошивка",
-                    "zh-cn": "固件"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "firmware.installed",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Installed version",
-                    "de": "Installierte Version",
-                    "ru": "Установленная версия",
-                    "pt": "Versão instalada",
-                    "nl": "Geïnstalleerde versie",
-                    "fr": "Version installée",
-                    "it": "Versione installata",
-                    "es": "Versión instalada",
-                    "pl": "Zainstalowana wersja",
-                    "uk": "Встановлена ​​версія",
-                    "zh-cn": "安装版本"
-                },
-                "type": "string",
-                "role": "info.firmware",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "FRITZ!OS version installed on the box",
-                    "de": "Auf der Box installierte FRITZ!OS-Version",
-                    "ru": "Версия FRITZ!OS, установленная на коробке",
-                    "pt": "Versão do FRITZ!OS instalada na caixa",
-                    "nl": "FRITZ!OS-versie geïnstalleerd op de box",
-                    "fr": "Version FRITZ!OS installée sur la box",
-                    "it": "Versione FRITZ!OS installata sul box",
-                    "es": "Versión de FRITZ!OS instalada en la caja",
-                    "pl": "Wersja FRITZ!OS zainstalowana na pudełku",
-                    "uk": "Версія FRITZ!OS встановлена ​​на коробці",
-                    "zh-cn": "盒子上安装的 FRITZ!OS 版本"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "firmware.updateAvailable",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Update available",
-                    "de": "Update verfügbar",
-                    "ru": "Доступно обновление",
-                    "pt": "Atualização disponível",
-                    "nl": "Update beschikbaar",
-                    "fr": "Mise à jour disponible",
-                    "it": "Aggiornamento disponibile",
-                    "es": "Actualización disponible",
-                    "pl": "Dostępna aktualizacja",
-                    "uk": "Доступне оновлення",
-                    "zh-cn": "可用更新"
-                },
-                "type": "boolean",
-                "role": "indicator",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "true if the box itself reports a pending update",
-                    "de": "true, wenn die Box selbst ein ausstehendes Update meldet",
-                    "ru": "true, если само окно сообщает об ожидающем обновлении",
-                    "pt": "true se a própria caixa relatar uma atualização pendente",
-                    "nl": "true als de box zelf een update meldt die in behandeling is",
-                    "fr": "vrai si la boîte elle-même signale une mise à jour en attente",
-                    "it": "true se la casella stessa segnala un aggiornamento in sospeso",
-                    "es": "Verdadero si el propio cuadro informa una actualización pendiente",
-                    "pl": "true, jeśli samo pole zgłasza oczekującą aktualizację",
-                    "uk": "true, якщо саме вікно повідомляє про очікуване оновлення",
-                    "zh-cn": "true 如果框本身报告有待更新"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "firmware.availableVersion",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Available version",
-                    "de": "Verfügbare Version",
-                    "ru": "Доступная версия",
-                    "pt": "Versão disponível",
-                    "nl": "Beschikbare versie",
-                    "fr": "Version disponible",
-                    "it": "Versione disponibile",
-                    "es": "Versión disponible",
-                    "pl": "Dostępna wersja",
-                    "uk": "Доступна версія",
-                    "zh-cn": "可用版本"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Version offered by the box update check",
-                    "de": "Version, die die Update-Prüfung der Box anbietet",
-                    "ru": "Версия, предлагаемая при проверке обновления коробки",
-                    "pt": "Versão oferecida pela caixa de verificação de atualização",
-                    "nl": "Versie aangeboden door de box-updatecontrole",
-                    "fr": "Version proposée par la box update check",
-                    "it": "Versione offerta dal controllo dell'aggiornamento della casella",
-                    "es": "Versión que ofrece la casilla de verificación de actualización.",
-                    "pl": "Wersja oferowana przez kontrolę aktualizacji skrzynki",
-                    "uk": "Версія, запропонована прапорцем оновлення",
-                    "zh-cn": "盒子更新检查提供的版本"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "firmware.vendorLatest",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Latest version (vendor site)",
-                    "de": "Neueste Version (Herstellerseite)",
-                    "ru": "Последняя версия (сайт поставщика)",
-                    "pt": "Versão mais recente (site do fornecedor)",
-                    "nl": "Nieuwste versie (site van de leverancier)",
-                    "fr": "Dernière version (site du fournisseur)",
-                    "it": "Ultima versione (sito del fornitore)",
-                    "es": "Última versión (sitio del proveedor)",
-                    "pl": "Najnowsza wersja (strona dostawcy)",
-                    "uk": "Остання версія (сайт виробника)",
-                    "zh-cn": "最新版本（供应商网站）"
-                },
-                "type": "string",
-                "role": "text",
-                "read": true,
-                "write": false,
-                "desc": {
-                    "en": "Newest version on the vendor download server (only if switched on)",
-                    "de": "Neueste Version auf dem Download-Server des Herstellers (nur wenn eingeschaltet)",
-                    "ru": "Новейшая версия на сервере загрузки поставщика (только если он включен)",
-                    "pt": "Versão mais recente no servidor de download do fornecedor (somente se estiver ativado)",
-                    "nl": "Nieuwste versie op de downloadserver van de leverancier (alleen indien ingeschakeld)",
-                    "fr": "Version la plus récente sur le serveur de téléchargement du fournisseur (uniquement si activé)",
-                    "it": "Versione più recente sul server di download del fornitore (solo se attivato)",
-                    "es": "Versión más reciente en el servidor de descarga del proveedor (solo si está activado)",
-                    "pl": "Najnowsza wersja na serwerze pobierania dostawcy (tylko jeśli jest włączona)",
-                    "uk": "Найновіша версія на сервері завантажень постачальника (лише якщо ввімкнено)",
-                    "zh-cn": "供应商下载服务器上的最新版本（仅当打开时）"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "actions",
-            "type": "channel",
-            "common": {
-                "name": {
-                    "en": "Actions",
-                    "de": "Aktionen",
-                    "ru": "Действия",
-                    "pt": "Ações",
-                    "nl": "Acties",
-                    "fr": "Actes",
-                    "it": "Azioni",
-                    "es": "Comportamiento",
-                    "pl": "Działania",
-                    "uk": "Дії",
-                    "zh-cn": "行动"
-                }
-            },
-            "native": {}
-        },
-        {
-            "_id": "actions.runNow",
-            "type": "state",
-            "common": {
-                "name": {
-                    "en": "Check now",
-                    "de": "Jetzt prüfen",
-                    "ru": "Проверьте сейчас",
-                    "pt": "Verifique agora",
-                    "nl": "Controleer nu",
-                    "fr": "Vérifiez maintenant",
-                    "it": "Controlla ora",
-                    "es": "Compruébalo ahora",
-                    "pl": "Sprawdź teraz",
-                    "uk": "Перевір зараз",
-                    "zh-cn": "立即查看"
-                },
-                "type": "boolean",
-                "role": "button",
-                "read": false,
-                "write": true,
-                "desc": {
-                    "en": "Press to run all checks right away",
-                    "de": "Drücken, um alle Prüfungen sofort zu starten",
-                    "ru": "Нажмите, чтобы сразу запустить все проверки",
-                    "pt": "Pressione para executar todas as verificações imediatamente",
-                    "nl": "Druk op om alle controles meteen uit te voeren",
-                    "fr": "Appuyez pour exécuter toutes les vérifications immédiatement",
-                    "it": "Premere per eseguire subito tutti i controlli",
-                    "es": "Presione para ejecutar todas las comprobaciones de inmediato",
-                    "pl": "Naciśnij, aby od razu przeprowadzić wszystkie kontrole",
-                    "uk": "Натисніть, щоб негайно запустити всі перевірки",
-                    "zh-cn": "按立即运行所有检查"
-                }
-            },
-            "native": {}
+        "type": "number",
+        "role": "value.time",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Time of the last complete run of all checks",
+          "de": "Zeitpunkt, an dem zuletzt alle Prüfungen gelaufen sind",
+          "ru": "Время последнего полного выполнения всех проверок",
+          "pt": "Hora da última execução completa de todas as verificações",
+          "nl": "Tijdstip van de laatste volledige uitvoering van alle controles",
+          "fr": "Heure de la dernière exécution complète de tous les contrôles",
+          "it": "Ora dell'ultima esecuzione completa di tutti i controlli",
+          "es": "Hora de la última ejecución completa de todas las comprobaciones",
+          "pl": "Godzina ostatniego pełnego przebiegu wszystkich kontroli",
+          "uk": "Час останнього повного виконання всіх перевірок",
+          "zh-cn": "最后一次完整运行所有检查的时间"
         }
-    ],
-    "encryptedNative": [
-        "password"
-    ],
-    "protectedNative": [
-        "password",
-        "username",
-        "telegramUser",
-        "emailTo"
-    ]
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.model",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Model",
+          "de": "Modell",
+          "ru": "Модель",
+          "pt": "Modelo",
+          "nl": "Model",
+          "fr": "Modèle",
+          "it": "Modello",
+          "es": "Modelo",
+          "pl": "Model",
+          "uk": "Модель",
+          "zh-cn": "模型"
+        },
+        "type": "string",
+        "role": "info.model",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Model reported by the box",
+          "de": "Von der Box gemeldetes Modell",
+          "ru": "Модель указана на коробке",
+          "pt": "Modelo relatado pela caixa",
+          "nl": "Model gerapporteerd door de doos",
+          "fr": "Modèle rapporté par la boite",
+          "it": "Modello segnalato dalla scatola",
+          "es": "Modelo reportado por la caja.",
+          "pl": "Model zgłoszony przez pudełko",
+          "uk": "Модель повідомляє коробка",
+          "zh-cn": "盒子报告的型号"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.uptime",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Uptime of the box",
+          "de": "Laufzeit der Box",
+          "ru": "Время работы коробки",
+          "pt": "Tempo de atividade da caixa",
+          "nl": "Uptime van de doos",
+          "fr": "Disponibilité de la box",
+          "it": "Tempo di attività della scatola",
+          "es": "Tiempo de actividad de la caja",
+          "pl": "Czas działania pudełka",
+          "uk": "Час роботи коробки",
+          "zh-cn": "盒子的正常运行时间"
+        },
+        "type": "number",
+        "role": "value.interval",
+        "read": true,
+        "write": false,
+        "unit": "s",
+        "desc": {
+          "en": "Seconds since the last restart of the box. Drops to a small value after a restart.",
+          "de": "Sekunden seit dem letzten Neustart der Box. Fällt nach einem Neustart auf einen kleinen Wert.",
+          "ru": "Секунды с момента последнего перезапуска коробки. Падает до небольшого значения после перезапуска.",
+          "pt": "Segundos desde a última reinicialização da caixa. Cai para um valor pequeno após uma reinicialização.",
+          "nl": "Seconden sinds de laatste herstart van de box. Daalt naar een kleine waarde na een herstart.",
+          "fr": "Secondes depuis le dernier redémarrage de la box. Tombe à une petite valeur après un redémarrage.",
+          "it": "Secondi dall'ultimo riavvio del box. Scende a un valore basso dopo il riavvio.",
+          "es": "Segundos desde el último reinicio del box. Cae a un valor pequeño después de un reinicio.",
+          "pl": "Sekundy od ostatniego ponownego uruchomienia urządzenia. Po ponownym uruchomieniu spada do małej wartości.",
+          "uk": "Секунд з моменту останнього перезапуску коробки. Падає до невеликого значення після перезапуску.",
+          "zh-cn": "自上次重新启动盒子以来的秒数。重新启动后下降到一个较小的值。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.certFingerprint",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Trusted TLS certificate (SHA-256)",
+          "de": "Vertrautes TLS-Zertifikat (SHA-256)",
+          "ru": "Доверенный сертификат TLS (SHA-256)",
+          "pt": "Certificado TLS confiável (SHA-256)",
+          "nl": "Vertrouwd TLS-certificaat (SHA-256)",
+          "fr": "Certificat TLS de confiance (SHA-256)",
+          "it": "Certificato TLS affidabile (SHA-256)",
+          "es": "Certificado TLS de confianza (SHA-256)",
+          "pl": "Zaufany certyfikat TLS (SHA-256)",
+          "uk": "Довірений сертифікат TLS (SHA-256)",
+          "zh-cn": "可信 TLS 证书 (SHA-256)"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Fingerprint of the box certificate trusted on first contact. If the box shows a different one, the adapter stops and warns.",
+          "de": "Fingerabdruck des Box-Zertifikats, dem beim ersten Kontakt vertraut wurde. Zeigt die Box ein anderes, stoppt der Adapter und warnt.",
+          "ru": "Отпечаток пальца сертификата коробки, которому доверяют при первом контакте. Если в поле указано другое, адаптер останавливается и предупреждает.",
+          "pt": "Impressão digital do certificado da caixa confiável no primeiro contato. Se a caixa mostrar um diferente, o adaptador para e avisa.",
+          "nl": "Vingerafdruk van het boxcertificaat dat bij het eerste contact werd vertrouwd. Als het vakje een ander exemplaar toont, stopt de adapter en waarschuwt.",
+          "fr": "Empreinte digitale du certificat de la boîte approuvée au premier contact. Si la case en affiche un autre, l'adaptateur s'arrête et avertit.",
+          "it": "Impronta digitale del certificato della scatola attendibile al primo contatto. Se la casella ne mostra uno diverso, l'adattatore si ferma e avvisa.",
+          "es": "Huella digital del certificado de caja confiable en el primer contacto. Si el cuadro muestra uno diferente, el adaptador se detiene y avisa.",
+          "pl": "Odcisk palca certyfikatu pudełka zaufany przy pierwszym kontakcie. Jeśli na pudełku widnieje inny, adapter zatrzymuje się i ostrzega.",
+          "uk": "Відбиток пальця сертифіката коробки довірено під час першого контакту. Якщо в полі показано інше, адаптер зупиняється та попереджає.",
+          "zh-cn": "第一次接触时信任的盒子证书指纹。如果该框显示不同的内容，适配器就会停止并发出警告。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.diagnostics",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Diagnostics (secrets masked)",
+          "de": "Diagnose (Geheimnisse geschwärzt)",
+          "ru": "Диагностика (секреты замаскированы)",
+          "pt": "Diagnóstico (segredos mascarados)",
+          "nl": "Diagnostiek (geheimen gemaskeerd)",
+          "fr": "Diagnostics (secrets masqués)",
+          "it": "Diagnostica (segreti mascherati)",
+          "es": "Diagnóstico (secretos enmascarados)",
+          "pl": "Diagnostyka (tajemnice zamaskowane)",
+          "uk": "Діагностика (секрети замасковані)",
+          "zh-cn": "诊断（隐藏的秘密）"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Result of the diagnostics button. Passwords, names and addresses are masked as far as possible. Read it before you share it.",
+          "de": "Ergebnis des Diagnose-Knopfs. Kennwörter, Namen und Adressen sind so weit wie möglich geschwärzt. Vor dem Teilen selbst durchlesen.",
+          "ru": "Результат кнопки диагностики. Пароли, имена и адреса маскируются, насколько это возможно. Прочтите, прежде чем поделиться.",
+          "pt": "Resultado do botão de diagnóstico. Senhas, nomes e endereços são mascarados tanto quanto possível. Leia antes de compartilhar.",
+          "nl": "Resultaat van de diagnoseknop. Wachtwoorden, namen en adressen worden zoveel mogelijk gemaskeerd. Lees het voordat je het deelt.",
+          "fr": "Résultat du bouton de diagnostic. Les mots de passe, noms et adresses sont masqués dans la mesure du possible. Lisez-le avant de le partager.",
+          "it": "Risultato del pulsante di diagnostica. Password, nomi e indirizzi vengono mascherati il ​​più possibile. Leggilo prima di condividerlo.",
+          "es": "Resultado del botón de diagnóstico. Las contraseñas, nombres y direcciones están enmascarados en la medida de lo posible. Léelo antes de compartirlo.",
+          "pl": "Wynik przycisku diagnostycznego. Hasła, nazwy i adresy są maskowane w miarę możliwości. Przeczytaj zanim udostępnisz.",
+          "uk": "Результат дії кнопки діагностики. Паролі, імена та адреси максимально маскуються. Прочитайте його, перш ніж поділитися ним.",
+          "zh-cn": "诊断按钮的结果。密码、姓名和地址均被尽可能隐藏。在分享之前先阅读它。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "summary",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Summary",
+          "de": "Zusammenfassung",
+          "ru": "Краткое содержание",
+          "pt": "Resumo",
+          "nl": "Samenvatting",
+          "fr": "Résumé",
+          "it": "Riepilogo",
+          "es": "Resumen",
+          "pl": "Streszczenie",
+          "uk": "Резюме",
+          "zh-cn": "概括"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "summary.score",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Security score (0-100)",
+          "de": "Sicherheitswert (0-100)",
+          "ru": "Оценка безопасности (0-100)",
+          "pt": "Pontuação de segurança (0-100)",
+          "nl": "Beveiligingsscore (0-100)",
+          "fr": "Score de sécurité (0-100)",
+          "it": "Punteggio di sicurezza (0-100)",
+          "es": "Puntuación de seguridad (0-100)",
+          "pl": "Wynik bezpieczeństwa (0-100)",
+          "uk": "Оцінка безпеки (0-100)",
+          "zh-cn": "安全评分（0-100）"
+        },
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "min": 0,
+        "max": 100,
+        "desc": {
+          "en": "100 = nothing found. Each open critical finding costs 25 points, each warning 10. Hints do not count.",
+          "de": "100 = nichts gefunden. Jeder offene kritische Fund kostet 25 Punkte, jede Warnung 10. Hinweise zählen nicht.",
+          "ru": "100 = ничего не найдено. Каждое открытое критическое открытие стоит 25 очков, каждое предупреждение — 10. Подсказки не засчитываются.",
+          "pt": "100 = nada encontrado. Cada descoberta crítica aberta custa 25 pontos, cada aviso 10. As dicas não contam.",
+          "nl": "100 = niets gevonden. Elke open kritische bevinding kost 25 punten, elke waarschuwing 10. Hints tellen niet mee.",
+          "fr": "100 = rien trouvé. Chaque découverte critique ouverte coûte 25 points, chaque avertissement 10. Les indices ne comptent pas.",
+          "it": "100 = niente trovato. Ogni scoperta critica aperta costa 25 punti, ogni avvertimento 10. I suggerimenti non contano.",
+          "es": "100 = no se encontró nada. Cada hallazgo crítico abierto cuesta 25 puntos, cada advertencia 10. Las pistas no cuentan.",
+          "pl": "100 = nic nie znaleziono. Każde otwarte znalezisko krytyczne kosztuje 25 punktów, każde ostrzeżenie 10. Wskazówki się nie liczą.",
+          "uk": "100 = нічого не знайдено. Кожна відкрита критична знахідка коштує 25 балів, кожне попередження 10. Підказки не зараховуються.",
+          "zh-cn": "100 = 未找到任何内容。每个公开的关键发现需要 25 分，每个警告需要 10 分。提示不算在内。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "summary.text",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Open findings as text",
+          "de": "Offene Punkte als Text",
+          "ru": "Открыть выводы в виде текста",
+          "pt": "Abrir descobertas como texto",
+          "nl": "Open bevindingen als tekst",
+          "fr": "Ouvrir les résultats sous forme de texte",
+          "it": "Apri i risultati come testo",
+          "es": "Abrir resultados como texto",
+          "pl": "Otwórz wyniki jako tekst",
+          "uk": "Відкрийте знахідки як текст",
+          "zh-cn": "以文本形式打开调查结果"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Open findings as readable text, e.g. for a VIS widget",
+          "de": "Offene Funde als lesbarer Text, z. B. für ein VIS-Widget",
+          "ru": "Открыть результаты в виде читаемого текста, например. для виджета VIS",
+          "pt": "Abra as descobertas como texto legível, por ex. para um widget VIS",
+          "nl": "Open bevindingen als leesbare tekst, b.v. voor een VIS-widget",
+          "fr": "Ouvrir les résultats sous forme de texte lisible, par ex. pour un widget VIS",
+          "it": "Apri i risultati come testo leggibile, ad es. per un widget VIS",
+          "es": "Abrir los resultados como texto legible, p. para un widget VIS",
+          "pl": "Otwórz wyniki w formie czytelnego tekstu, np. dla widżetu VIS",
+          "uk": "Відкрити висновки як читабельний текст, напр. для віджета VIS",
+          "zh-cn": "以可读文本的形式打开调查结果，例如对于 VIS 小部件"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Findings",
+          "de": "Funde",
+          "ru": "Выводы",
+          "pt": "Descobertas",
+          "nl": "Bevindingen",
+          "fr": "Résultats",
+          "it": "Risultati",
+          "es": "Recomendaciones",
+          "pl": "Ustalenia",
+          "uk": "Висновки",
+          "zh-cn": "发现"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.json",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "All findings (JSON)",
+          "de": "Alle Funde (JSON)",
+          "ru": "Все результаты (JSON)",
+          "pt": "Todas as descobertas (JSON)",
+          "nl": "Alle bevindingen (JSON)",
+          "fr": "Tous les résultats (JSON)",
+          "it": "Tutti i risultati (JSON)",
+          "es": "Todos los hallazgos (JSON)",
+          "pl": "Wszystkie wyniki (JSON)",
+          "uk": "Усі знахідки (JSON)",
+          "zh-cn": "所有结果 (JSON)"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "All current findings with id, severity, explanation and advice (JSON)",
+          "de": "Alle aktuellen Funde mit ID, Schwere, Erklärung und Empfehlung (JSON)",
+          "ru": "Все текущие результаты с идентификатором, серьезностью, пояснениями и советами (JSON)",
+          "pt": "Todas as descobertas atuais com id, gravidade, explicação e conselhos (JSON)",
+          "nl": "Alle actuele bevindingen met id, ernst, uitleg en advies (JSON)",
+          "fr": "Tous les résultats actuels avec identifiant, gravité, explication et conseils (JSON)",
+          "it": "Tutti i risultati attuali con ID, gravità, spiegazione e consigli (JSON)",
+          "es": "Todos los hallazgos actuales con identificación, gravedad, explicación y consejos (JSON)",
+          "pl": "Wszystkie aktualne ustalenia z identyfikatorem, wagą, wyjaśnieniem i poradą (JSON)",
+          "uk": "Усі поточні результати з ідентифікатором, серйозністю, поясненнями та порадами (JSON)",
+          "zh-cn": "所有当前发现的 ID、严重性、解释和建议 (JSON)"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.confirmationsApplied",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Confirmations from the settings table (internal)",
+          "de": "Bestätigungen aus der Tabelle in den Einstellungen (intern)",
+          "ru": "Подтверждения из таблицы настроек (внутренние)",
+          "pt": "Confirmações da tabela de configurações (internas)",
+          "nl": "Bevestigingen uit de instellingentabel (intern)",
+          "fr": "Confirmations du tableau des paramètres (interne)",
+          "it": "Conferme dalla tabella delle impostazioni (interna)",
+          "es": "Confirmaciones de la tabla de configuración (interna)",
+          "pl": "Potwierdzenia z tabeli ustawień (wewnętrzne)",
+          "uk": "Підтвердження з таблиці налаштувань (внутрішні)",
+          "zh-cn": "来自设置表的确认（内部）"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Ticks of the settings table last applied, so later changes can be told apart",
+          "de": "Zuletzt übernommene Haken der Tabelle, um spätere Änderungen zu erkennen",
+          "ru": "Отметки таблицы настроек применялись последними, поэтому последующие изменения можно отличить друг от друга.",
+          "pt": "Marcações da tabela de configurações aplicadas pela última vez, para que alterações posteriores possam ser diferenciadas",
+          "nl": "Vinkjes van de instellingentabel laatst toegepast, zodat latere wijzigingen uit elkaar kunnen worden gehouden",
+          "fr": "Coches du tableau des paramètres appliqué en dernier lieu, afin que les modifications ultérieures puissent être distinguées",
+          "it": "I segni di spunta della tabella delle impostazioni sono stati applicati per ultimi, in modo che le modifiche successive possano essere distinte",
+          "es": "Los ticks de la tabla de configuración se aplicaron por última vez, por lo que los cambios posteriores se pueden diferenciar",
+          "pl": "Ostatnio zastosowano znaczniki z tabeli ustawień, dzięki czemu późniejsze zmiany można rozróżnić",
+          "uk": "Галочки в таблиці налаштувань застосовано останнім часом, тому пізніші зміни можна розрізнити",
+          "zh-cn": "最后应用的设置表的刻度，以便可以区分以后的更改"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.open",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Open findings",
+          "de": "Offene Funde",
+          "ru": "Открытые выводы",
+          "pt": "Descobertas abertas",
+          "nl": "Bevindingen openen",
+          "fr": "Résultats ouverts",
+          "it": "Risultati aperti",
+          "es": "Hallazgos abiertos",
+          "pl": "Otwarte ustalenia",
+          "uk": "Відкриті знахідки",
+          "zh-cn": "开放调查结果"
+        },
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Number of findings that are not confirmed",
+          "de": "Anzahl der Funde, die nicht bestätigt sind",
+          "ru": "Количество выводов, которые не подтверждены",
+          "pt": "Número de descobertas que não foram confirmadas",
+          "nl": "Aantal bevindingen dat niet is bevestigd",
+          "fr": "Nombre de résultats non confirmés",
+          "it": "Numero di risultati non confermati",
+          "es": "Número de hallazgos que no están confirmados",
+          "pl": "Liczba ustaleń, które nie zostały potwierdzone",
+          "uk": "Кількість висновків, які не підтверджені",
+          "zh-cn": "未证实的调查结果数量"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.critical",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Critical findings",
+          "de": "Kritische Funde",
+          "ru": "Критические выводы",
+          "pt": "Descobertas críticas",
+          "nl": "Kritische bevindingen",
+          "fr": "Résultats critiques",
+          "it": "Risultati critici",
+          "es": "Hallazgos críticos",
+          "pl": "Krytyczne ustalenia",
+          "uk": "Критичні висновки",
+          "zh-cn": "重要发现"
+        },
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Number of open critical findings",
+          "de": "Anzahl der offenen kritischen Funde",
+          "ru": "Количество открытых критических выводов",
+          "pt": "Número de descobertas críticas abertas",
+          "nl": "Aantal openstaande kritische bevindingen",
+          "fr": "Nombre de conclusions critiques ouvertes",
+          "it": "Numero di rilievi critici aperti",
+          "es": "Número de hallazgos críticos abiertos",
+          "pl": "Liczba otwartych ustaleń krytycznych",
+          "uk": "Кількість відкритих критичних висновків",
+          "zh-cn": "公开的关键发现数量"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.acknowledge",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Confirm finding (enter id)",
+          "de": "Fund bestätigen (ID eintragen)",
+          "ru": "Подтвердите поиск (введите идентификатор)",
+          "pt": "Confirme a descoberta (insira o ID)",
+          "nl": "Bevinding bevestigen (ID invoeren)",
+          "fr": "Confirmer la recherche (entrer l'identifiant)",
+          "it": "Conferma la ricerca (inserisci l'ID)",
+          "es": "Confirmar hallazgo (ingrese ID)",
+          "pl": "Potwierdź znalezienie (wprowadź identyfikator)",
+          "uk": "Підтвердити знахідку (введіть id)",
+          "zh-cn": "确认发现（输入id）"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": true,
+        "desc": {
+          "en": "Write the id of a finding here to mark it as intended. Easier: tab \"Findings\" in the adapter settings.",
+          "de": "ID eines Fundes hier eintragen, um ihn als gewollt zu markieren. Einfacher: Reiter \"Funde\" in den Adapter-Einstellungen.",
+          "ru": "Напишите здесь идентификатор находки, чтобы отметить ее как предназначенную. Проще: вкладка «Выводы» в настройках адаптера.",
+          "pt": "Escreva o ID de uma descoberta aqui para marcá-la como pretendido. Mais fácil: aba \"Descobertas\" nas configurações do adaptador.",
+          "nl": "Schrijf hier de ID van een bevinding om deze te markeren zoals bedoeld. Makkelijker: tabblad \"Bevindingen\" in de adapterinstellingen.",
+          "fr": "Écrivez ici l'identifiant d'une découverte pour la marquer comme prévu. Plus simple : onglet \"Résultats\" dans les paramètres de l'adaptateur.",
+          "it": "Scrivi qui l'ID di una scoperta per contrassegnarla come prevista. Più semplice: scheda \"Risultati\" nelle impostazioni dell'adattatore.",
+          "es": "Escriba aquí la identificación de un hallazgo para marcarlo según lo previsto. Más fácil: pestaña \"Hallazgos\" en la configuración del adaptador.",
+          "pl": "Wpisz tutaj identyfikator wyniku, aby oznaczyć go zgodnie z przeznaczeniem. Łatwiej: zakładka „Wyniki” w ustawieniach adaptera.",
+          "uk": "Напишіть тут ідентифікатор знахідки, щоб позначити її як призначену. Простіше: вкладка «Знахідки» в налаштуваннях адаптера.",
+          "zh-cn": "在此处写下结果的 ID 以将其标记为预期的。更简单：在适配器设置中选项卡“发现”。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "findings.unacknowledge",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Undo confirmation (enter id)",
+          "de": "Bestätigung zurücknehmen (ID eintragen)",
+          "ru": "Отменить подтверждение (ввести идентификатор)",
+          "pt": "Desfazer confirmação (inserir id)",
+          "nl": "Bevestiging ongedaan maken (ID invoeren)",
+          "fr": "Annuler la confirmation (entrez l'identifiant)",
+          "it": "Conferma annullamento (inserisci ID)",
+          "es": "Deshacer confirmación (ingrese id)",
+          "pl": "Cofnij potwierdzenie (wprowadź identyfikator)",
+          "uk": "Скасувати підтвердження (введіть ідентифікатор)",
+          "zh-cn": "撤消确认（输入 ID）"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": true,
+        "desc": {
+          "en": "Write the id of a confirmed finding here to report it again",
+          "de": "ID eines bestätigten Fundes hier eintragen, damit er wieder gemeldet wird",
+          "ru": "Напишите здесь идентификатор подтвержденного результата, чтобы сообщить об этом еще раз.",
+          "pt": "Escreva aqui o ID de uma descoberta confirmada para relatá-la novamente",
+          "nl": "Schrijf hier de ID van een bevestigde bevinding om deze opnieuw te melden",
+          "fr": "Écrivez ici l'identifiant d'une découverte confirmée pour la signaler à nouveau",
+          "it": "Scrivi qui l'id di un risultato confermato per segnalarlo nuovamente",
+          "es": "Escribe aquí el id de un hallazgo confirmado para reportarlo nuevamente",
+          "pl": "Wpisz tutaj identyfikator potwierdzonego ustalenia, aby zgłosić je ponownie",
+          "uk": "Напишіть тут ідентифікатор підтвердженої знахідки, щоб повідомити про неї знову",
+          "zh-cn": "在此写下已确认发现的 ID 以再次报告"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "events",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Event log",
+          "de": "Ereignisprotokoll",
+          "ru": "Журнал событий",
+          "pt": "Registro de eventos",
+          "nl": "Gebeurtenislogboek",
+          "fr": "Journal des événements",
+          "it": "Registro eventi",
+          "es": "Registro de eventos",
+          "pl": "Dziennik zdarzeń",
+          "uk": "Журнал подій",
+          "zh-cn": "事件日志"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "events.seen",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Processed log entries",
+          "de": "Verarbeitete Protokolleinträge",
+          "ru": "Обработанные записи журнала",
+          "pt": "Entradas de registro processadas",
+          "nl": "Verwerkte loggegevens",
+          "fr": "Entrées de journal traitées",
+          "it": "Voci di registro elaborate",
+          "es": "Entradas de registro procesadas",
+          "pl": "Przetworzone wpisy dziennika",
+          "uk": "Оброблені записи журналу",
+          "zh-cn": "已处理的日志条目"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Internal: ids of log entries already processed, so nothing is reported twice",
+          "de": "Intern: IDs bereits verarbeiteter Protokolleinträge, damit nichts doppelt gemeldet wird",
+          "ru": "Внутренний: идентификаторы записей журнала уже обработаны, поэтому дважды ничего не сообщается.",
+          "pt": "Interno: ids de entradas de log já processadas, portanto nada é relatado duas vezes",
+          "nl": "Intern: ID's van loggegevens die al zijn verwerkt, dus er wordt niets dubbel gerapporteerd",
+          "fr": "Interne : identifiants des entrées de journal déjà traitées, donc rien n'est signalé deux fois",
+          "it": "Interno: ID delle voci di registro già elaborate, quindi nulla viene segnalato due volte",
+          "es": "Interno: los identificadores de las entradas del registro ya se procesaron, por lo que no se informa nada dos veces",
+          "pl": "Wewnętrzne: identyfikatory wpisów dziennika już przetworzonych, więc nic nie jest raportowane dwukrotnie",
+          "uk": "Внутрішній: ідентифікатори записів журналу вже оброблено, тому нічого не повідомляється двічі",
+          "zh-cn": "内部：日志条目的 ID 已处理，因此不会报告两次"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "events.failedLogins24h",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Failed logins (24 h)",
+          "de": "Fehlgeschlagene Anmeldungen (24 h)",
+          "ru": "Неудачные входы (24 часа)",
+          "pt": "Logins com falha (24 horas)",
+          "nl": "Mislukte aanmeldingen (24 uur)",
+          "fr": "Échec de connexion (24 h)",
+          "it": "Accessi non riusciti (24 ore)",
+          "es": "Inicios de sesión fallidos (24 h)",
+          "pl": "Nieudane logowanie (24 h)",
+          "uk": "Невдалі входи (24 години)",
+          "zh-cn": "登录失败（24 小时）"
+        },
+        "type": "number",
+        "role": "value",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Failed login attempts at the box in the last 24 hours (repeats counted)",
+          "de": "Fehlgeschlagene Anmeldeversuche an der Box in den letzten 24 Stunden (Wiederholungen mitgezählt)",
+          "ru": "Неудачные попытки входа в ящик за последние 24 часа (повторения засчитываются)",
+          "pt": "Tentativas de login malsucedidas na caixa nas últimas 24 horas (repetições contadas)",
+          "nl": "Mislukte inlogpogingen bij de box in de afgelopen 24 uur (herhalingen geteld)",
+          "fr": "Échec des tentatives de connexion à la box au cours des dernières 24 heures (répétitions comptées)",
+          "it": "Tentativi di accesso non riusciti alla casella nelle ultime 24 ore (ripetizioni conteggiate)",
+          "es": "Intentos fallidos de inicio de sesión en el buzón en las últimas 24 horas (se cuentan las repeticiones)",
+          "pl": "Nieudane próby logowania do skrzynki w ciągu ostatnich 24 godzin (liczone powtórzenia)",
+          "uk": "Невдалі спроби входу в скриньку за останні 24 години (враховано повтори)",
+          "zh-cn": "过去 24 小时内尝试登录失败的次数（重复计数）"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "events.lastFailedLogin",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Last failed login",
+          "de": "Letzte fehlgeschlagene Anmeldung",
+          "ru": "Последний неудачный вход в систему",
+          "pt": "Último login com falha",
+          "nl": "Laatste mislukte aanmelding",
+          "fr": "Dernière connexion échouée",
+          "it": "Ultimo accesso non riuscito",
+          "es": "Último inicio de sesión fallido",
+          "pl": "Ostatnie nieudane logowanie",
+          "uk": "Останній невдалий вхід",
+          "zh-cn": "上次登录失败"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Most recent failed login: time, source address, user, access way and original message (JSON)",
+          "de": "Letzte fehlgeschlagene Anmeldung: Zeit, Absender-Adresse, Benutzer, Zugangsweg und Originalmeldung (JSON)",
+          "ru": "Последний неудачный вход в систему: время, исходный адрес, пользователь, способ доступа и исходное сообщение (JSON).",
+          "pt": "Login com falha mais recente: hora, endereço de origem, usuário, forma de acesso e mensagem original (JSON)",
+          "nl": "Meest recente mislukte login: tijd, bronadres, gebruiker, toegangsweg en origineel bericht (JSON)",
+          "fr": "Échec de connexion le plus récent : heure, adresse source, utilisateur, mode d'accès et message d'origine (JSON)",
+          "it": "Accesso non riuscito più recente: ora, indirizzo di origine, utente, modalità di accesso e messaggio originale (JSON)",
+          "es": "Inicio de sesión fallido más reciente: hora, dirección de origen, usuario, forma de acceso y mensaje original (JSON)",
+          "pl": "Ostatnie nieudane logowanie: czas, adres źródłowy, użytkownik, sposób dostępu i oryginalna wiadomość (JSON)",
+          "uk": "Останній невдалий вхід: час, адреса джерела, користувач, спосіб доступу та оригінальне повідомлення (JSON)",
+          "zh-cn": "最近一次登录失败：时间、源地址、用户、访问方式、原始消息（JSON）"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "ports",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Exposure",
+          "de": "Erreichbarkeit",
+          "ru": "Контакт",
+          "pt": "Exposição",
+          "nl": "Blootstelling",
+          "fr": "Exposition",
+          "it": "Esposizione",
+          "es": "Exposición",
+          "pl": "Narażenie",
+          "uk": "Контакт",
+          "zh-cn": "接触"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "ports.json",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Open ports (JSON)",
+          "de": "Offene Ports (JSON)",
+          "ru": "Открытые порты (JSON)",
+          "pt": "Portas abertas (JSON)",
+          "nl": "Open poorten (JSON)",
+          "fr": "Ports ouverts (JSON)",
+          "it": "Porte aperte (JSON)",
+          "es": "Puertos abiertos (JSON)",
+          "pl": "Otwarte porty (JSON)",
+          "uk": "Відкриті порти (JSON)",
+          "zh-cn": "开放端口 (JSON)"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Everything reachable from the internet: port forwardings, remote access, MyFRITZ, FTP, TR-069, with explanation (JSON)",
+          "de": "Alles, was aus dem Internet erreichbar ist: Portfreigaben, Fernzugang, MyFRITZ, FTP, TR-069, mit Erklärung (JSON)",
+          "ru": "Все, что доступно из Интернета: переадресация портов, удаленный доступ, MyFRITZ, FTP, TR-069, с пояснениями (JSON).",
+          "pt": "Tudo acessível pela internet: encaminhamento de porta, acesso remoto, MyFRITZ, FTP, TR-069, com explicação (JSON)",
+          "nl": "Alles bereikbaar vanaf internet: port forwardings, toegang op afstand, MyFRITZ, FTP, TR-069, met uitleg (JSON)",
+          "fr": "Tout accessible depuis Internet : redirections de ports, accès à distance, MyFRITZ, FTP, TR-069, avec explication (JSON)",
+          "it": "Tutto raggiungibile da Internet: port forwarding, accesso remoto, MyFRITZ, FTP, TR-069, con spiegazione (JSON)",
+          "es": "Todo accesible desde Internet: reenvío de puertos, acceso remoto, MyFRITZ, FTP, TR-069, con explicación (JSON)",
+          "pl": "Wszystko dostępne z Internetu: przekierowanie portów, dostęp zdalny, MyFRITZ, FTP, TR-069, z objaśnieniami (JSON)",
+          "uk": "Все, що доступно з Інтернету: переадресація портів, віддалений доступ, MyFRITZ, FTP, TR-069, з поясненням (JSON)",
+          "zh-cn": "可通过互联网访问的所有内容：端口转发、远程访问、MyFRITZ、FTP、TR-069，并附有说明 (JSON)"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "ports.wanIp",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "WAN IP of the box",
+          "de": "WAN-IP der Box",
+          "ru": "WAN IP коробки",
+          "pt": "WAN IP da caixa",
+          "nl": "WAN IP van de box",
+          "fr": "IP WAN de la box",
+          "it": "IP WAN della scatola",
+          "es": "IP WAN de la caja",
+          "pl": "IP WAN skrzynki",
+          "uk": "WAN IP коробки",
+          "zh-cn": "盒子的WAN IP"
+        },
+        "type": "string",
+        "role": "info.ip",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "External IPv4 address of the box. Differs from your public address if another router or the provider sits in between.",
+          "de": "Externe IPv4-Adresse der Box. Weicht von der öffentlichen Adresse ab, wenn ein weiterer Router oder der Anbieter dazwischen sitzt.",
+          "ru": "Внешний IPv4-адрес ящика. Отличается от вашего публичного адреса, если между ним находится другой маршрутизатор или провайдер.",
+          "pt": "Endereço IPv4 externo da caixa. Difere do seu endereço público se outro roteador ou provedor estiver entre eles.",
+          "nl": "Extern IPv4-adres van de box. Verschilt van uw openbare adres als er een andere router of provider tussen zit.",
+          "fr": "Adresse IPv4 externe de la box. Diffère de votre adresse publique si un autre routeur ou le fournisseur se situe entre les deux.",
+          "it": "Indirizzo IPv4 esterno della scatola. Differisce dal tuo indirizzo pubblico se nel mezzo si trova un altro router o il provider.",
+          "es": "Dirección IPv4 externa de la caja. Se diferencia de su dirección pública si hay otro enrutador o el proveedor en el medio.",
+          "pl": "Zewnętrzny adres IPv4 urządzenia. Różni się od Twojego adresu publicznego, jeśli pomiędzy nimi znajduje się inny router lub dostawca.",
+          "uk": "Зовнішня IPv4 адреса скриньки. Відрізняється від вашої публічної адреси, якщо інший маршрутизатор або провайдер знаходиться між ними.",
+          "zh-cn": "盒子的外部 IPv4 地址。如果中间有另一个路由器或提供商，则与您的公共地址不同。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "settings",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Settings",
+          "de": "Einstellungen",
+          "ru": "Настройки",
+          "pt": "Configurações",
+          "nl": "Instellingen",
+          "fr": "Paramètres",
+          "it": "Impostazioni",
+          "es": "Ajustes",
+          "pl": "Ustawienia",
+          "uk": "Налаштування",
+          "zh-cn": "设置"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "settings.knownUsers",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Known box users",
+          "de": "Bekannte Box-Benutzer",
+          "ru": "Известные пользователи бокса",
+          "pt": "Usuários de caixa conhecidos",
+          "nl": "Bekende boxgebruikers",
+          "fr": "Utilisateurs de box connus",
+          "it": "Utenti di box conosciuti",
+          "es": "Usuarios de caja conocidos",
+          "pl": "Znani użytkownicy skrzynek",
+          "uk": "Відомі користувачі скриньки",
+          "zh-cn": "已知盒子用户"
+        },
+        "type": "string",
+        "role": "json",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Box users seen so far. A new user on the box is reported.",
+          "de": "Bisher bekannte Box-Benutzer. Ein neuer Benutzer auf der Box wird gemeldet.",
+          "ru": "Пользователи Box видели до сих пор. Сообщается о новом пользователе на ящике.",
+          "pt": "Usuários do Box vistos até agora. Um novo usuário na caixa é relatado.",
+          "nl": "Box-gebruikers tot nu toe gezien. Er wordt een nieuwe gebruiker op de box gerapporteerd.",
+          "fr": "Utilisateurs de Box vus jusqu'à présent. Un nouvel utilisateur sur la box est signalé.",
+          "it": "Utenti Box visti finora. Viene segnalato un nuovo utente sulla casella.",
+          "es": "Usuarios de Box vistos hasta ahora. Se informa un nuevo usuario en el cuadro.",
+          "pl": "Użytkownicy Boxa widzieli do tej pory. Zgłoszono nowego użytkownika skrzynki.",
+          "uk": "Користувачі Box, яких бачили на даний момент. Повідомляється про нового користувача на ящику.",
+          "zh-cn": "Box 用户到目前为止看到的。报告盒子上有一个新用户。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "firmware",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Firmware",
+          "de": "Firmware",
+          "ru": "Прошивка",
+          "pt": "Firmware",
+          "nl": "Firmware",
+          "fr": "Micrologiciel",
+          "it": "Firmware",
+          "es": "firmware",
+          "pl": "Oprogramowanie sprzętowe",
+          "uk": "Прошивка",
+          "zh-cn": "固件"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "firmware.installed",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Installed version",
+          "de": "Installierte Version",
+          "ru": "Установленная версия",
+          "pt": "Versão instalada",
+          "nl": "Geïnstalleerde versie",
+          "fr": "Version installée",
+          "it": "Versione installata",
+          "es": "Versión instalada",
+          "pl": "Zainstalowana wersja",
+          "uk": "Встановлена ​​версія",
+          "zh-cn": "安装版本"
+        },
+        "type": "string",
+        "role": "info.firmware",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "FRITZ!OS version installed on the box",
+          "de": "Auf der Box installierte FRITZ!OS-Version",
+          "ru": "Версия FRITZ!OS, установленная на коробке",
+          "pt": "Versão do FRITZ!OS instalada na caixa",
+          "nl": "FRITZ!OS-versie geïnstalleerd op de box",
+          "fr": "Version FRITZ!OS installée sur la box",
+          "it": "Versione FRITZ!OS installata sul box",
+          "es": "Versión de FRITZ!OS instalada en la caja",
+          "pl": "Wersja FRITZ!OS zainstalowana na pudełku",
+          "uk": "Версія FRITZ!OS встановлена ​​на коробці",
+          "zh-cn": "盒子上安装的 FRITZ!OS 版本"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "firmware.updateAvailable",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Update available",
+          "de": "Update verfügbar",
+          "ru": "Доступно обновление",
+          "pt": "Atualização disponível",
+          "nl": "Update beschikbaar",
+          "fr": "Mise à jour disponible",
+          "it": "Aggiornamento disponibile",
+          "es": "Actualización disponible",
+          "pl": "Dostępna aktualizacja",
+          "uk": "Доступне оновлення",
+          "zh-cn": "可用更新"
+        },
+        "type": "boolean",
+        "role": "indicator",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "true if the box itself reports a pending update",
+          "de": "true, wenn die Box selbst ein ausstehendes Update meldet",
+          "ru": "true, если само окно сообщает об ожидающем обновлении",
+          "pt": "true se a própria caixa relatar uma atualização pendente",
+          "nl": "true als de box zelf een update meldt die in behandeling is",
+          "fr": "vrai si la boîte elle-même signale une mise à jour en attente",
+          "it": "true se la casella stessa segnala un aggiornamento in sospeso",
+          "es": "Verdadero si el propio cuadro informa una actualización pendiente",
+          "pl": "true, jeśli samo pole zgłasza oczekującą aktualizację",
+          "uk": "true, якщо саме вікно повідомляє про очікуване оновлення",
+          "zh-cn": "true 如果框本身报告有待更新"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "firmware.availableVersion",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Available version",
+          "de": "Verfügbare Version",
+          "ru": "Доступная версия",
+          "pt": "Versão disponível",
+          "nl": "Beschikbare versie",
+          "fr": "Version disponible",
+          "it": "Versione disponibile",
+          "es": "Versión disponible",
+          "pl": "Dostępna wersja",
+          "uk": "Доступна версія",
+          "zh-cn": "可用版本"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Version offered by the box update check",
+          "de": "Version, die die Update-Prüfung der Box anbietet",
+          "ru": "Версия, предлагаемая при проверке обновления коробки",
+          "pt": "Versão oferecida pela caixa de verificação de atualização",
+          "nl": "Versie aangeboden door de box-updatecontrole",
+          "fr": "Version proposée par la box update check",
+          "it": "Versione offerta dal controllo dell'aggiornamento della casella",
+          "es": "Versión que ofrece la casilla de verificación de actualización.",
+          "pl": "Wersja oferowana przez kontrolę aktualizacji skrzynki",
+          "uk": "Версія, запропонована прапорцем оновлення",
+          "zh-cn": "盒子更新检查提供的版本"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "firmware.vendorLatest",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Latest version (vendor site)",
+          "de": "Neueste Version (Herstellerseite)",
+          "ru": "Последняя версия (сайт поставщика)",
+          "pt": "Versão mais recente (site do fornecedor)",
+          "nl": "Nieuwste versie (site van de leverancier)",
+          "fr": "Dernière version (site du fournisseur)",
+          "it": "Ultima versione (sito del fornitore)",
+          "es": "Última versión (sitio del proveedor)",
+          "pl": "Najnowsza wersja (strona dostawcy)",
+          "uk": "Остання версія (сайт виробника)",
+          "zh-cn": "最新版本（供应商网站）"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "Newest version on the vendor download server (only if switched on)",
+          "de": "Neueste Version auf dem Download-Server des Herstellers (nur wenn eingeschaltet)",
+          "ru": "Новейшая версия на сервере загрузки поставщика (только если он включен)",
+          "pt": "Versão mais recente no servidor de download do fornecedor (somente se estiver ativado)",
+          "nl": "Nieuwste versie op de downloadserver van de leverancier (alleen indien ingeschakeld)",
+          "fr": "Version la plus récente sur le serveur de téléchargement du fournisseur (uniquement si activé)",
+          "it": "Versione più recente sul server di download del fornitore (solo se attivato)",
+          "es": "Versión más reciente en el servidor de descarga del proveedor (solo si está activado)",
+          "pl": "Najnowsza wersja na serwerze pobierania dostawcy (tylko jeśli jest włączona)",
+          "uk": "Найновіша версія на сервері завантажень постачальника (лише якщо ввімкнено)",
+          "zh-cn": "供应商下载服务器上的最新版本（仅当打开时）"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "actions",
+      "type": "channel",
+      "common": {
+        "name": {
+          "en": "Actions",
+          "de": "Aktionen",
+          "ru": "Действия",
+          "pt": "Ações",
+          "nl": "Acties",
+          "fr": "Actes",
+          "it": "Azioni",
+          "es": "Comportamiento",
+          "pl": "Działania",
+          "uk": "Дії",
+          "zh-cn": "行动"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "actions.runNow",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Check now",
+          "de": "Jetzt prüfen",
+          "ru": "Проверьте сейчас",
+          "pt": "Verifique agora",
+          "nl": "Controleer nu",
+          "fr": "Vérifiez maintenant",
+          "it": "Controlla ora",
+          "es": "Compruébalo ahora",
+          "pl": "Sprawdź teraz",
+          "uk": "Перевір зараз",
+          "zh-cn": "立即查看"
+        },
+        "type": "boolean",
+        "role": "button",
+        "read": false,
+        "write": true,
+        "desc": {
+          "en": "Press to run all checks right away",
+          "de": "Drücken, um alle Prüfungen sofort zu starten",
+          "ru": "Нажмите, чтобы сразу запустить все проверки",
+          "pt": "Pressione para executar todas as verificações imediatamente",
+          "nl": "Druk op om alle controles meteen uit te voeren",
+          "fr": "Appuyez pour exécuter toutes les vérifications immédiatement",
+          "it": "Premere per eseguire subito tutti i controlli",
+          "es": "Presione para ejecutar todas las comprobaciones de inmediato",
+          "pl": "Naciśnij, aby od razu przeprowadzić wszystkie kontrole",
+          "uk": "Натисніть, щоб негайно запустити всі перевірки",
+          "zh-cn": "按立即运行所有检查"
+        }
+      },
+      "native": {}
+    }
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password",
+    "username",
+    "telegramUser",
+    "emailTo"
+  ]
 }
