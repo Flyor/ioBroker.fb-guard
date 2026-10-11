@@ -19,7 +19,7 @@ declare global {
             alertNewDevices: boolean;
             skipKnownPrivate: boolean;
             summaryInterval: 'off' | 'daily' | 'weekly';
-            confirmations: { id: string; sev?: string; title?: string; ok: boolean }[];
+            confirmations: { id: string; title?: string; ok: boolean }[];
             portSelfTest: boolean;
             vendorFirmwareCheck: boolean;
 

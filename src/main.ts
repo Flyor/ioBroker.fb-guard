@@ -37,6 +37,16 @@ const INTERVALS = {
     intervalFirmware: [60, 10080, 720],
 } as const;
 
+/** Errors that mean the box did not answer (as opposed to bugs or unexpected answers). */
+function isNetworkError(err: Error): boolean {
+    const code = (err as NodeJS.ErrnoException).code ?? '';
+    return (
+        /^(ECONNREFUSED|ECONNRESET|EHOSTUNREACH|ENETUNREACH|ETIMEDOUT|ENOTFOUND|EAI_AGAIN|EPIPE|ECONNABORTED)$/.test(
+            code,
+        ) || /timeout|No complete answer|not reachable|socket hang up|did not report a TLS port/i.test(err.message)
+    );
+}
+
 function clampInterval(key: keyof typeof INTERVALS, value: unknown, log: ioBroker.Logger): number {
     const [min, max, def] = INTERVALS[key];
     const v = Number(value);
@@ -52,7 +62,18 @@ function clampInterval(key: keyof typeof INTERVALS, value: unknown, log: ioBroke
 
 class FbGuard extends utils.Adapter {
     private client?: Tr064Client;
-    private notifier!: Notifier;
+    /** Sends nothing until onReady has read the config. */
+    private notifier = new Notifier(this, {
+        telegramEnabled: false,
+        telegramInstance: '',
+        telegramUser: '',
+        emailEnabled: false,
+        emailInstance: '',
+        emailTo: '',
+        minSeverity: 'critical',
+    });
+    /** Jobs that wait in the queue, so a tick or button press does not add the same job twice. */
+    private readonly pending = new Set<string>();
     private readonly store = new FindingStore();
     private initialized = new Set<Category>();
     /** Categories whose stored texts are still in the previous system language. */
@@ -114,7 +135,10 @@ class FbGuard extends utils.Adapter {
 
         await this.runAll();
         const every = (key: keyof typeof INTERVALS, fn: () => Promise<void>): void => {
-            const iv = this.setInterval(() => this.enqueue(fn), clampInterval(key, this.config[key], this.log) * MIN);
+            const iv = this.setInterval(
+                () => this.enqueue(fn, key),
+                clampInterval(key, this.config[key], this.log) * MIN,
+            );
             if (iv) {
                 this.timers.push(iv);
             }
@@ -239,8 +263,20 @@ class FbGuard extends utils.Adapter {
     /**
      * TR-064 calls are serialized, the box does not like parallel logins.
      */
-    private enqueue(fn: () => Promise<void>): Promise<void> {
-        return this.queued(fn).catch(() => undefined);
+    private enqueue(fn: () => Promise<void>, key?: string): Promise<void> {
+        if (key) {
+            if (this.pending.has(key)) {
+                this.log.debug(`${key} is already waiting, skipped`);
+                return Promise.resolve();
+            }
+            this.pending.add(key);
+        }
+        return this.queued(async () => {
+            if (key) {
+                this.pending.delete(key);
+            }
+            await fn();
+        }).catch(() => undefined);
     }
 
     /** Like enqueue, but hands the result or the error to the caller as well. */
@@ -260,7 +296,7 @@ class FbGuard extends utils.Adapter {
             await this.runSettings();
             await this.runFirmware();
             await this.setState('info.lastRun', Date.now(), true);
-        });
+        }, 'all');
     }
 
     private async getClient(): Promise<Tr064Client | undefined> {
@@ -350,8 +386,11 @@ class FbGuard extends utils.Adapter {
             );
         } else {
             this.failedRuns++;
-            // warn once per outage, not every few minutes
-            if (this.failedRuns === 1) {
+            if (!isNetworkError(err)) {
+                // a bug or unexpected answer, not an outage: keep the stack for bug reports
+                this.log.error(`Check failed: ${err.stack ?? err.message}`);
+            } else if (this.failedRuns === 1) {
+                // warn once per outage, not every few minutes
                 this.log.warn(`FRITZ!Box not reachable: ${err.message}`);
             } else {
                 this.log.debug(`FRITZ!Box still not reachable (${this.failedRuns}): ${err.message}`);
@@ -577,8 +616,12 @@ class FbGuard extends utils.Adapter {
         }
         const short = id.slice(this.namespace.length + 1);
         if (short === 'actions.runNow') {
-            this.blocked = false;
             await this.setState(short, false, true);
+            if (!this.config.host || !this.config.username || !this.config.password) {
+                this.log.info('Run now ignored: the setup is not finished yet.');
+                return;
+            }
+            this.blocked = false;
             await this.runAll();
         } else if (short === 'findings.acknowledge' || short === 'findings.unacknowledge') {
             const fid = String(state.val ?? '').trim();
@@ -674,6 +717,9 @@ class FbGuard extends utils.Adapter {
 
     private async onMessage(obj: ioBroker.Message): Promise<void> {
         if (!obj?.command) {
+            if (obj?.callback && obj.from) {
+                this.sendTo(obj.from, '', { error: 'No command' }, obj.callback);
+            }
             return;
         }
         const reply = (res: unknown): void => {

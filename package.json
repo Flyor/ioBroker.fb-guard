@@ -52,7 +52,6 @@
     "admin{,/!(src)/**}/!(tsconfig|tsconfig.*|.eslintrc).{json,json5}",
     "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
     "build/",
-    "www/",
     "io-package.json",
     "LICENSE"
   ],
@@ -75,6 +74,5 @@
   },
   "bugs": {
     "url": "https://github.com/Flyor/ioBroker.fb-guard/issues"
-  },
-  "readmeFilename": "README.md"
+  }
 }

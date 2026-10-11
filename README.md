@@ -55,6 +55,11 @@ FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH. This project is not affiliat
     ### **WORK IN PROGRESS**
 -->
 
+### **WORK IN PROGRESS**
+* (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up
+* (Flyor) Pressing "run now" several times no longer queues the same checks again
+* (Flyor) Small cleanups in the package
+
 ### 0.1.0 (2026-10-11)
 * (Flyor) First release: failed logins, open ports, firmware and settings checks, findings and confirmation right in the settings, setup wizard, Telegram and e-mail
 
