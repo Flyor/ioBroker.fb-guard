@@ -79,9 +79,13 @@ const channelName = (c: string | undefined, lang: Lang): string => {
 export function evaluateEvents(events: LogEvent[], opts: EventOptions, lang: Lang): EventAlert[] {
     const alerts: EventAlert[] = [];
     const failed = new Map<string, LogEvent[]>();
+    const wlan = new Map<string, LogEvent[]>();
 
     for (const e of events) {
-        if (e.kind === 'login-failed' || e.kind === 'login-blocked') {
+        if (e.kind === 'wlan-failed') {
+            const key = e.mac ?? '?';
+            wlan.set(key, [...(wlan.get(key) ?? []), e]);
+        } else if (e.kind === 'login-failed' || e.kind === 'login-blocked') {
             const key = e.ip ?? '?';
             failed.set(key, [...(failed.get(key) ?? []), e]);
         } else if (e.kind === 'login-ok' && opts.alertRemoteLogins && e.ip) {
@@ -193,5 +197,55 @@ Was this intended? If not, delete the forwarding in the box.`,
             text: lines.join('\n'),
         });
     }
+    for (const [mac, list] of wlan) {
+        alerts.push(wlanAlert(mac, list, opts, lang));
+    }
     return alerts;
+}
+
+/**
+ * Failed Wi-Fi logins of one device. A known device usually has an old key stored,
+ * an unknown one nearby may be guessing the key.
+ */
+function wlanAlert(mac: string, list: LogEvent[], opts: EventOptions, lang: Lang): EventAlert {
+    const count = list.reduce((n, e) => n + e.count, 0);
+    const known = mac !== '?' && !!opts.hosts?.some(h => h.mac.toLowerCase() === mac);
+    const attack = count >= opts.attackThreshold;
+    const severity = attack ? (known ? 'warning' : 'critical') : known ? 'info' : 'warning';
+    const last = list.reduce((a, b) => ((a.time?.getTime() ?? 0) > (b.time?.getTime() ?? 0) ? a : b));
+    const lines = [
+        L(lang, `Anzahl: ${count}`, `Count: ${count}`),
+        L(lang, `Zuletzt: ${fmtTime(last, lang)}`, `Last: ${fmtTime(last, lang)}`),
+        L(lang, `Gerät (MAC): ${mac}`, `Device (MAC): ${mac}`),
+    ];
+    if (last.reason) {
+        lines.push(L(lang, `Grund: ${last.reason}`, `Reason: ${last.reason}`));
+    }
+    lines.push(
+        '',
+        known
+            ? L(
+                  lang,
+                  'Das Gerät ist der Box bekannt. Meist ist dort noch ein altes WLAN-Kennwort gespeichert.',
+                  'The box knows this device. Usually it still has an old Wi-Fi password stored.',
+              )
+            : isRandomMac(mac)
+              ? L(
+                    lang,
+                    'Unbekanntes Gerät mit privater (wechselnder) Adresse. Das kann ein Gast sein, der sich vertippt hat, oder jemand in Reichweite, der den WLAN-Schlüssel rät. Bei vielen Versuchen den Schlüssel prüfen und WPS ausschalten.',
+                    'Unknown device with a private (changing) address. It may be a guest with a typo, or someone in range guessing the Wi-Fi key. On many attempts check the key and turn off WPS.',
+                )
+              : L(
+                    lang,
+                    'Unbekanntes Gerät. Das kann ein Gast sein, der sich vertippt hat, oder jemand in Reichweite, der den WLAN-Schlüssel rät. Bei vielen Versuchen den Schlüssel prüfen und WPS ausschalten.',
+                    'Unknown device. It may be a guest with a typo, or someone in range guessing the Wi-Fi key. On many attempts check the key and turn off WPS.',
+                ),
+    );
+    return {
+        severity,
+        title: attack
+            ? L(lang, 'Mehrere fehlgeschlagene WLAN-Anmeldungen', 'Multiple failed Wi-Fi logins')
+            : L(lang, 'Fehlgeschlagene WLAN-Anmeldung', 'Failed Wi-Fi login'),
+        text: lines.join('\n'),
+    };
 }

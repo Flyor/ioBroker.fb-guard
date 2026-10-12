@@ -6,6 +6,7 @@ export type EventKind =
     | 'login-failed'
     | 'login-ok'
     | 'login-blocked'
+    | 'wlan-failed'
     | 'new-device'
     | 'settings-changed'
     | 'port-added'
@@ -26,6 +27,8 @@ export interface LogEvent {
     kind: EventKind;
     ip?: string;
     user?: string;
+    /** Device address, for failed Wi-Fi logins. */
+    mac?: string;
     channel?: LoginChannel;
     reason?: string;
     /** The box merges repeated messages ("[2 Meldungen seit ...]"). */
@@ -49,6 +52,7 @@ const EVENT_KINDS: Record<number, EventKind> = {
     500: 'login-ok',
     504: 'login-ok',
     506: 'login-ok',
+    705: 'wlan-failed',
     503: 'login-failed',
     505: 'login-failed',
     510: 'login-failed',
@@ -66,6 +70,10 @@ const FAILED =
 /** Logins to the internet provider, the WLAN or for telephony are not logins to the box. */
 const NOT_BOX_LOGIN =
     /wlan-anmeldung|wlan-gerät|wi-?fi (device|login)|internetanbieter|internet ?provider|\bppp\b|\bdsl\b|rufnummer|telefonie|telephony|voip|\bsip\b|registrierung|registration/i;
+/** "WLAN-Gerät Anmeldung gescheitert (2,4 GHz): ungültiger WLAN-Schlüssel. MAC-Adresse: ..." */
+const WLAN_FAILED =
+    /wlan-gerät anmeldung gescheitert|wlan-anmeldung .*ungültiger wlan-schlüssel|wi-?fi device (login|logon|sign[- ]?in) (failed|unsuccessful)|invalid wi-?fi (key|password)/i;
+const MAC_ADDR = /\b([0-9a-f]{2}(?::[0-9a-f]{2}){5})\b/i;
 const BLOCKED = /\b(gesperrt|sperre|blocked|locked)\b/i;
 const NEW_DEVICE = /\b(neues?|new)\b.*\b(gerät|geräte|device|wlan-gerät)\b|erstmalig/i;
 const VPN = /\b(vpn|wireguard|ipsec)\b/i;
@@ -146,7 +154,12 @@ function extractIp(message: string): string | undefined {
     return undefined;
 }
 
-export function classify(message: string): Pick<LogEvent, 'kind' | 'ip' | 'user' | 'channel' | 'reason'> {
+export function classify(message: string): Pick<LogEvent, 'kind' | 'ip' | 'user' | 'channel' | 'reason' | 'mac'> {
+    if (WLAN_FAILED.test(message)) {
+        // "(2,4 GHz): ungültiger WLAN-Schlüssel. MAC-Adresse: ..." -> "ungültiger WLAN-Schlüssel"
+        const why = /\)\s*:\s*([^.]{3,80})/.exec(message)?.[1]?.trim();
+        return { kind: 'wlan-failed', mac: MAC_ADDR.exec(message)?.[1]?.toLowerCase(), reason: why };
+    }
     const ip = extractIp(message);
     const reason = /\(([^)]{3,80})\)\.?\s*$/.exec(message.replace(REPEAT, ''))?.[1];
     if (SETTINGS.test(message)) {
@@ -301,6 +314,8 @@ export function parseDeviceLogXml(xml: string): LogEvent[] {
             count: repeatCount(message),
             ...c,
             kind,
+            // the event id also catches Wi-Fi messages in other languages, the text rule may not
+            mac: c.mac ?? (kind === 'wlan-failed' ? MAC_ADDR.exec(message)?.[1]?.toLowerCase() : undefined),
         });
     }
     return events;

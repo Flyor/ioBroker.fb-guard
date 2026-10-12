@@ -497,7 +497,9 @@ class FbGuard extends utils.Adapter {
         }
 
         const skipKnownPrivate = this.config.skipKnownPrivate !== false;
-        const needHosts = this.config.alertNewDevices && skipKnownPrivate && fresh.some(e => e.kind === 'new-device');
+        const needHosts =
+            (this.config.alertNewDevices && skipKnownPrivate && fresh.some(e => e.kind === 'new-device')) ||
+            fresh.some(e => e.kind === 'wlan-failed');
         const hosts = needHosts ? await readHosts(ctx) : undefined;
         const alerts = evaluateEvents(
             fresh,

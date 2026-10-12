@@ -35,6 +35,12 @@ describe('ip extraction', () => {
 describe('login classification', () => {
     it('ignores WLAN, provider and telephony messages', () => {
         assert.equal(classify('WLAN-Anmeldung ist gescheitert: Maximale Anzahl erreicht.').kind, 'other');
+        const w = classify(
+            'WLAN-Gerät Anmeldung gescheitert (2,4 GHz): ungültiger WLAN-Schlüssel. MAC-Adresse: 3A:11:22:33:44:55.',
+        );
+        assert.equal(w.kind, 'wlan-failed');
+        assert.equal(w.mac, '3a:11:22:33:44:55');
+        assert.equal(w.reason, 'ungültiger WLAN-Schlüssel');
         assert.equal(classify('Anmeldung beim Internetanbieter ist fehlgeschlagen.').kind, 'other');
         assert.equal(classify('Anmeldung der Internetrufnummer 123 war nicht erfolgreich.').kind, 'other');
     });

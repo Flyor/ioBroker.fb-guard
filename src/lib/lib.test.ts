@@ -142,6 +142,30 @@ describe('logparser', () => {
         assert.equal(evaluateEvents(ev, { ...opts, knownIps: ['198.51.100.0/24'] }, 'de').length, 0);
     });
 
+    it('groups failed Wi-Fi logins per device', () => {
+        const ev = (mac: string, id: number): string =>
+            `<Event><id>705</id><group>wlan</group><date>12.10.26</date><time>23:0${id}:00</time><msg>WLAN-Gerät Anmeldung gescheitert (2,4 GHz): ungültiger WLAN-Schlüssel. MAC-Adresse: ${mac}.</msg></Event>`;
+        const events = parseDeviceLogXml(
+            `<DeviceLog>${ev('00:11:22:33:44:55', 1)}${ev('00:11:22:33:44:55', 2)}${ev('3A:00:00:00:00:01', 3)}</DeviceLog>`,
+        );
+        const opts = {
+            ownUser: 'x',
+            knownIps: [],
+            alertRemoteLogins: true,
+            alertNewDevices: false,
+            attackThreshold: 2,
+            hosts: [{ mac: '00:11:22:33:44:55', active: false }],
+        };
+        const alerts = evaluateEvents(events, opts, 'en');
+        assert.equal(alerts.length, 2);
+        const known = alerts.find(a => a.text.includes('00:11:22:33:44:55'));
+        const other = alerts.find(a => a.text.includes('3a:00:00:00:00:01'));
+        assert.equal(known?.severity, 'warning');
+        assert.match(known?.text ?? '', /Count: 2/);
+        assert.equal(other?.severity, 'warning');
+        assert.match(other?.text ?? '', /private/);
+    });
+
     it('uses event ids and repeat counts', () => {
         const xml = `<DeviceLog>
             <Event><id>510</id><group>sys</group><date>10.10.26</date><time>22:55:59</time>

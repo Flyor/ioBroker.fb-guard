@@ -7,11 +7,12 @@
 
 Wer in die Oberfläche deiner Box kommt, hat das ganze Heimnetz in der Hand: Portfreigaben, DNS, Telefonie, VPN-Zugänge. Das kann über ein erratenes oder abgegriffenes Kennwort passieren, über eine Sicherheitslücke in der Firmware oder über eine Freigabe, die vor Jahren eingerichtet und vergessen wurde. Die Box schreibt das meiste davon ins Ereignisprotokoll, aber dort liest es niemand, und warnen tut sie nicht.
 
-fb-guard liest es für dich. Gemeldet werden fehlgeschlagene und unerwartete Anmeldungen an der Box selbst (Oberfläche, Fernzugang, Apps, TR-064), nicht gescheiterte WLAN-Verbindungen. Dazu prüft er die Einstellungen, die einen Angriff leichter machen.
+fb-guard liest es für dich. Gemeldet werden fehlgeschlagene und unerwartete Anmeldungen an der Box selbst (Oberfläche, Fernzugang, Apps, TR-064) und getrennt davon Geräte, die mit falschem Schlüssel ins WLAN wollen. Dazu prüft er die Einstellungen, die einen Angriff leichter machen.
 
 ## Was geprüft wird
 
 - **Fehlgeschlagene Anmeldungen** aus dem Ereignisprotokoll, je Adresse zusammengefasst, mit Zeit, Benutzername, Zugangsweg und der Angabe, ob sie aus dem Internet oder aus dem Heimnetz kamen
+- **Fehlgeschlagene WLAN-Anmeldungen** (falscher Schlüssel), je Gerät zusammengefasst, mit dem Hinweis, ob die Box das Gerät schon kennt
 - **Anmeldungen aus dem Internet** von Adressen, die nicht auf deiner Liste bekannter Adressen stehen
 - **Offene Ports**: Portfreigaben, MyFRITZ!, Fernzugang, FTP über das Internet, TR-069 und UPnP, jeweils mit einer kurzen Erklärung, wofür der Port meist da ist
 - **Firmware**: Update verfügbar, aber nicht installiert, automatische Updates aus, Labor-Firmware und neuere Labor-Versionen

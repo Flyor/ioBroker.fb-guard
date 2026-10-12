@@ -16,11 +16,12 @@ Keeps an eye on the security of your [FRITZ!Box](https://fritz.com) and tells yo
 
 Whoever gets into the user interface of your box controls your whole home network: port forwardings, DNS, telephony, VPN access. That can happen through a guessed or leaked password, a security hole in the firmware, or a forwarding that was opened long ago and forgotten. The box writes most of this to its event log, but nobody reads it, and it does not warn you.
 
-fb-guard reads it for you. It reports failed and unexpected logins to the box itself (user interface, remote access, apps, TR-064), not failed Wi-Fi connections, and keeps an eye on the settings that make an attack easier.
+fb-guard reads it for you. It reports failed and unexpected logins to the box itself (user interface, remote access, apps, TR-064) and, separately, devices that fail to join the Wi-Fi with a wrong key. It also keeps an eye on the settings that make an attack easier.
 
 ## What it checks
 
 - **Failed logins** from the event log, grouped per address, with time, user name, access type and whether it came from the internet or your home network
+- **Failed Wi-Fi logins** (wrong key), grouped per device, with a hint whether the box already knows the device
 - **Logins from the internet** that are not on your list of known addresses
 - **Open ports**: port forwardings, MyFRITZ, remote access, FTP over the internet, TR-069 and UPnP. Each port comes with a short explanation of what it is usually used for. Ports you opened on purpose can be confirmed once.
 - **Firmware**: update available but not installed, automatic updates off, lab (beta) firmware and newer lab versions
@@ -68,6 +69,7 @@ FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This pro
 * (Flyor) Firmware comparison with the vendor server works again with the current file format
 * (Flyor) Lab firmware is reported, and newer lab versions are found on the vendor lab page
 * (Flyor) README explains what the adapter is for
+* (Flyor) Failed Wi-Fi logins (wrong key) are reported per device
 
 ### 0.1.1 (2026-10-11)
 * (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up
