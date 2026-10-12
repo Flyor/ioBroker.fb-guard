@@ -36,7 +36,7 @@ All findings are listed in the settings, tab "Findings", each with an explanatio
 ## Security and privacy
 
 - The password is stored encrypted in ioBroker and is never written to the log.
-- The connection to the box uses TLS. The certificate of the box is remembered on first use, and the adapter stops logging in if it changes.
+- The connection to the box uses TLS. The key of the box certificate is remembered on first use, and the adapter stops logging in if it changes. "Test connection" shows the certificate fingerprint, so you can compare it with the box.
 - After a rejected login the adapter stops trying, so it does not lock you out.
 - External services are off by default. Right now there is just one: the firmware comparison with the vendor download server, which only sends the model name.
 - The port test only checks your own WAN address.
@@ -54,6 +54,12 @@ FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH. This project is not affiliat
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Flyor) The trusted certificate is bound to the box address and to its key, so a renewed certificate or a new box address no longer raises an alarm
+* (Flyor) "Trust certificate again" accepts exactly the certificate from the warning
+* (Flyor) Test connection shows the certificate fingerprint and checks the rights more strictly
+* (Flyor) Readable adapter title
+
 ### 0.1.1 (2026-10-11)
 * (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up
 * (Flyor) Pressing "run now" several times no longer queues the same checks again

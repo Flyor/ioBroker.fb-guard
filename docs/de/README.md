@@ -27,7 +27,7 @@ Alle Funde stehen in den Einstellungen im Reiter "Funde", jeweils mit Erklärung
 ## Sicherheit und Datenschutz
 
 - Das Kennwort wird in ioBroker verschlüsselt gespeichert und nie ins Log geschrieben.
-- Die Verbindung zur Box läuft über TLS. Das Zertifikat der Box wird beim ersten Verbinden gemerkt. Ändert es sich, meldet sich der Adapter nicht mehr an.
+- Die Verbindung zur Box läuft über TLS. Der Schlüssel des Box-Zertifikats wird beim ersten Verbinden gemerkt. Ändert er sich, meldet sich der Adapter nicht mehr an. "Verbindung testen" zeigt den Fingerabdruck des Zertifikats, damit du ihn mit der Box vergleichen kannst.
 - Nach einer abgelehnten Anmeldung hört der Adapter auf, es weiter zu versuchen, damit er dich nicht aussperrt.
 - Externe Dienste sind ab Werk aus. Derzeit gibt es nur einen: den Firmware-Abgleich mit dem Download-Server des Herstellers, der nur den Modellnamen überträgt.
 - Der Port-Test prüft nur deine eigene WAN-Adresse.

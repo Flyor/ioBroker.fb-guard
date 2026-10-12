@@ -10,7 +10,8 @@ import { maskLogLine } from './diagnostics';
 import { FindingStore } from './findings';
 import { classifyIp, learnHomeIpv6 } from './ip';
 import { classify, parseDeviceLog, parseDeviceLogXml } from './logparser';
-import { CertificateMismatchError, PinnedAgent, type Tr064Client } from './tr064/client';
+import { hasSettingsRight } from './checks/settings';
+import { CertificateMismatchError, PinnedAgent, certPin, type Tr064Client } from './tr064/client';
 import { Tr064Fault } from './tr064/soap';
 
 const xmlLog = (group: string, msg: string, id = 1): string =>
@@ -174,11 +175,24 @@ describe('certificate pinning', function () {
                     { stdio: 'ignore' },
                 );
             }
+            // renewed certificate with the key of box 1
+            execFileSync(
+                'openssl',
+                ['req', '-x509', '-key', join(dir, 'k1.pem'), '-days', '2', '-subj', '/CN=box1-renewed'].concat([
+                    '-out',
+                    join(dir, 'c3.pem'),
+                ]),
+                { stdio: 'ignore' },
+            );
         } catch {
             this.skip();
         }
     });
     after(() => rmSync(dir, { recursive: true, force: true }));
+    const renewed = (): { key: Buffer; cert: Buffer } => ({
+        key: readFileSync(join(dir, 'k1.pem')),
+        cert: readFileSync(join(dir, 'c3.pem')),
+    });
 
     const get = (port: number, agent: https.Agent, timeout = 2000): Promise<number> =>
         new Promise((resolve, reject) => {
@@ -205,6 +219,52 @@ describe('certificate pinning', function () {
         }
     });
 
+    it('accepts a renewed certificate with the same key', async () => {
+        const server = https.createServer(cert(1), (_req, res) => res.end('ok'));
+        await new Promise<void>(r => server.listen(0, '127.0.0.1', r));
+        const port = (server.address() as net.AddressInfo).port;
+        try {
+            const first = new PinnedAgent(undefined);
+            assert.equal(await get(port, first), 200);
+            assert.match(first.pinned ?? '', /^sha256\//);
+            server.setSecureContext(renewed());
+            const again = new PinnedAgent(first.pinned);
+            assert.equal(await get(port, again), 200);
+            assert.notEqual(again.seenFingerprint, first.seenFingerprint);
+        } finally {
+            server.close();
+        }
+    });
+
+    it('upgrades a pin from 0.1.x only if it matches', async () => {
+        const server = https.createServer(cert(1), (_req, res) => res.end('ok'));
+        await new Promise<void>(r => server.listen(0, '127.0.0.1', r));
+        const port = (server.address() as net.AddressInfo).port;
+        try {
+            const probe = new PinnedAgent(undefined);
+            await get(port, probe);
+            const legacy = new PinnedAgent(probe.seenFingerprint);
+            assert.equal(await get(port, legacy), 200);
+            assert.ok(legacy.upgraded);
+            assert.equal(legacy.pinned, probe.pinned);
+            const wrong = new PinnedAgent('AA:BB:CC');
+            await assert.rejects(get(port, wrong), (e: Error) => e instanceof CertificateMismatchError);
+        } finally {
+            server.close();
+        }
+    });
+
+    it('builds the pin from the public key', () => {
+        const a = certPin(
+            Buffer.from(readFileSync(join(dir, 'c1.pem'), 'utf8').replace(/-----[^-]+-----|\s/g, ''), 'base64'),
+        );
+        const b = certPin(
+            Buffer.from(readFileSync(join(dir, 'c3.pem'), 'utf8').replace(/-----[^-]+-----|\s/g, ''), 'base64'),
+        );
+        assert.equal(a, b);
+        assert.equal(certPin(undefined), '');
+    });
+
     it('gives up when the TLS handshake stalls', async () => {
         const sockets: net.Socket[] = [];
         const server = net.createServer(s => sockets.push(s));
@@ -218,5 +278,15 @@ describe('certificate pinning', function () {
             sockets.forEach(s => s.destroy());
             server.close();
         }
+    });
+});
+
+describe('rights check', () => {
+    it('pairs every path with its own access value', () => {
+        const r = (p: string, a: string): string => `<path>${p}</path><access>${a}</access>`;
+        assert.equal(hasSettingsRight(r('BoxAdmin', 'readwrite')), true);
+        assert.equal(hasSettingsRight(r('Phone', 'readwrite') + r('BoxAdmin', 'readonly')), true);
+        assert.equal(hasSettingsRight(r('BoxAdmin', 'none') + r('Phone', 'readwrite')), false);
+        assert.equal(hasSettingsRight(''), false);
     });
 });

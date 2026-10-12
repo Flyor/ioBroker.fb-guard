@@ -31,17 +31,17 @@
       }
     },
     "titleLang": {
-      "en": "fb-guard",
-      "de": "fb-guard",
-      "ru": "fb-guard",
-      "pt": "fb-guard",
-      "nl": "fb-guard",
-      "fr": "fb-guard",
-      "it": "fb-guard",
-      "es": "fb-guard",
-      "pl": "fb-guard",
-      "uk": "fb-guard",
-      "zh-cn": "fb-guard"
+      "en": "FRITZ!Box Guard",
+      "de": "FRITZ!Box-Wächter",
+      "ru": "Страж FRITZ!Box",
+      "pt": "Guarda FRITZ!Box",
+      "nl": "FRITZ!Box-bewaker",
+      "fr": "Gardien FRITZ!Box",
+      "it": "Guardiano FRITZ!Box",
+      "es": "Guardián FRITZ!Box",
+      "pl": "Strażnik FRITZ!Box",
+      "uk": "Вартовий FRITZ!Box",
+      "zh-cn": "FRITZ!Box 卫士"
     },
     "desc": {
       "en": "Security guard for your FRITZ!Box router: reports failed logins, open ports, pending firmware updates and weak settings via Telegram or e-mail",
@@ -99,7 +99,9 @@
         "admin": ">=7.6.20"
       }
     ],
-    "messagebox": true,
+    "supportedMessages": {
+      "custom": true
+    },
     "nogit": true,
     "docs": {
       "en": "README.md",
@@ -310,34 +312,71 @@
       "type": "state",
       "common": {
         "name": {
-          "en": "Trusted TLS certificate (SHA-256)",
-          "de": "Vertrautes TLS-Zertifikat (SHA-256)",
-          "ru": "Доверенный сертификат TLS (SHA-256)",
-          "pt": "Certificado TLS confiável (SHA-256)",
-          "nl": "Vertrouwd TLS-certificaat (SHA-256)",
-          "fr": "Certificat TLS de confiance (SHA-256)",
-          "it": "Certificato TLS affidabile (SHA-256)",
-          "es": "Certificado TLS de confianza (SHA-256)",
-          "pl": "Zaufany certyfikat TLS (SHA-256)",
-          "uk": "Довірений сертифікат TLS (SHA-256)",
-          "zh-cn": "可信 TLS 证书 (SHA-256)"
+          "en": "Trusted TLS key of the box (SHA-256)",
+          "de": "Vertrauter TLS-Schlüssel der Box (SHA-256)",
+          "ru": "Доверенный ключ TLS устройства (SHA-256)",
+          "pt": "Chave TLS confiável da caixa (SHA-256)",
+          "nl": "Vertrouwde TLS-sleutel van de box (SHA-256)",
+          "fr": "Clé TLS de confiance de la box (SHA-256)",
+          "it": "Chiave TLS attendibile del box (SHA-256)",
+          "es": "Clave TLS de confianza del equipo (SHA-256)",
+          "pl": "Zaufany klucz TLS urządzenia (SHA-256)",
+          "uk": "Довірений ключ TLS пристрою (SHA-256)",
+          "zh-cn": "设备的可信 TLS 密钥 (SHA-256)"
         },
         "type": "string",
         "role": "text",
         "read": true,
         "write": false,
         "desc": {
-          "en": "Fingerprint of the box certificate trusted on first contact. If the box shows a different one, the adapter stops and warns.",
-          "de": "Fingerabdruck des Box-Zertifikats, dem beim ersten Kontakt vertraut wurde. Zeigt die Box ein anderes, stoppt der Adapter und warnt.",
-          "ru": "Отпечаток пальца сертификата коробки, которому доверяют при первом контакте. Если в поле указано другое, адаптер останавливается и предупреждает.",
-          "pt": "Impressão digital do certificado da caixa confiável no primeiro contato. Se a caixa mostrar um diferente, o adaptador para e avisa.",
-          "nl": "Vingerafdruk van het boxcertificaat dat bij het eerste contact werd vertrouwd. Als het vakje een ander exemplaar toont, stopt de adapter en waarschuwt.",
-          "fr": "Empreinte digitale du certificat de la boîte approuvée au premier contact. Si la case en affiche un autre, l'adaptateur s'arrête et avertit.",
-          "it": "Impronta digitale del certificato della scatola attendibile al primo contatto. Se la casella ne mostra uno diverso, l'adattatore si ferma e avvisa.",
-          "es": "Huella digital del certificado de caja confiable en el primer contacto. Si el cuadro muestra uno diferente, el adaptador se detiene y avisa.",
-          "pl": "Odcisk palca certyfikatu pudełka zaufany przy pierwszym kontakcie. Jeśli na pudełku widnieje inny, adapter zatrzymuje się i ostrzega.",
-          "uk": "Відбиток пальця сертифіката коробки довірено під час першого контакту. Якщо в полі показано інше, адаптер зупиняється та попереджає.",
-          "zh-cn": "第一次接触时信任的盒子证书指纹。如果该框显示不同的内容，适配器就会停止并发出警告。"
+          "en": "Hash of the public key of the box certificate, trusted on first contact. If the box shows a different key, the adapter stops and warns.",
+          "de": "Prüfsumme des öffentlichen Schlüssels im Box-Zertifikat, beim ersten Kontakt übernommen. Zeigt die Box einen anderen Schlüssel, stoppt der Adapter und warnt.",
+          "ru": "Хеш открытого ключа сертификата устройства, принятый при первом подключении. Если устройство покажет другой ключ, адаптер остановится и предупредит.",
+          "pt": "Hash da chave pública do certificado da caixa, aceite no primeiro contacto. Se a caixa mostrar outra chave, o adaptador para e avisa.",
+          "nl": "Hash van de publieke sleutel van het boxcertificaat, vertrouwd bij het eerste contact. Toont de box een andere sleutel, dan stopt de adapter en waarschuwt.",
+          "fr": "Empreinte de la clé publique du certificat de la box, approuvée au premier contact. Si la box présente une autre clé, l'adaptateur s'arrête et avertit.",
+          "it": "Hash della chiave pubblica del certificato del box, accettata al primo contatto. Se il box mostra una chiave diversa, l'adattatore si ferma e avvisa.",
+          "es": "Hash de la clave pública del certificado del equipo, aceptada en el primer contacto. Si el equipo muestra otra clave, el adaptador se detiene y avisa.",
+          "pl": "Skrót klucza publicznego certyfikatu urządzenia, zaakceptowany przy pierwszym połączeniu. Jeśli urządzenie pokaże inny klucz, adapter zatrzyma się i ostrzeże.",
+          "uk": "Хеш відкритого ключа сертифіката пристрою, прийнятий під час першого підключення. Якщо пристрій покаже інший ключ, адаптер зупиниться й попередить.",
+          "zh-cn": "设备证书公钥的哈希值，首次连接时被信任。如果设备显示不同的密钥，适配器会停止并发出警告。"
+        }
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.certHost",
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Address the trusted key belongs to",
+          "de": "Adresse, zu der der vertraute Schlüssel gehört",
+          "ru": "Адрес, к которому относится доверенный ключ",
+          "pt": "Endereço a que pertence a chave confiável",
+          "nl": "Adres waar de vertrouwde sleutel bij hoort",
+          "fr": "Adresse à laquelle appartient la clé de confiance",
+          "it": "Indirizzo a cui appartiene la chiave attendibile",
+          "es": "Dirección a la que pertenece la clave de confianza",
+          "pl": "Adres, do którego należy zaufany klucz",
+          "uk": "Адреса, до якої належить довірений ключ",
+          "zh-cn": "可信密钥所属的地址"
+        },
+        "type": "string",
+        "role": "text",
+        "read": true,
+        "write": false,
+        "desc": {
+          "en": "If the address in the settings changes, the key is trusted again instead of raising an alarm.",
+          "de": "Ändert sich die Adresse in den Einstellungen, wird der Schlüssel neu übernommen statt Alarm zu schlagen.",
+          "ru": "Если адрес в настройках изменится, ключ будет принят заново без тревоги.",
+          "pt": "Se o endereço nas configurações mudar, a chave é aceite de novo em vez de gerar um alarme.",
+          "nl": "Verandert het adres in de instellingen, dan wordt de sleutel opnieuw vertrouwd in plaats van alarm te slaan.",
+          "fr": "Si l'adresse change dans les paramètres, la clé est de nouveau approuvée au lieu de déclencher une alerte.",
+          "it": "Se l'indirizzo nelle impostazioni cambia, la chiave viene accettata di nuovo invece di dare l'allarme.",
+          "es": "Si cambia la dirección en la configuración, la clave se acepta de nuevo en lugar de dar la alarma.",
+          "pl": "Jeśli adres w ustawieniach się zmieni, klucz zostanie zaakceptowany ponownie zamiast wywołać alarm.",
+          "uk": "Якщо адреса в налаштуваннях зміниться, ключ буде прийнято знову замість тривоги.",
+          "zh-cn": "如果设置中的地址发生变化，将重新信任密钥，而不是发出警报。"
         }
       },
       "native": {}

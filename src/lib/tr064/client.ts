@@ -1,6 +1,7 @@
 import * as http from 'node:http';
 import * as https from 'node:https';
 import * as tls from 'node:tls';
+import { X509Certificate, createHash } from 'node:crypto';
 import type { Duplex } from 'node:stream';
 import { buildDigestHeader, parseDigestChallenge, type DigestChallenge } from './digest';
 import { buildEnvelope, parseDeviceDescription, parseResponse, type DeviceDescription } from './soap';
@@ -12,6 +13,8 @@ export class CertificateMismatchError extends Error {
     public constructor(
         public readonly expected: string,
         public readonly actual: string,
+        /** SHA-256 fingerprint of the new certificate, as shown in the box UI. */
+        public readonly fingerprint = '',
     ) {
         super('The TLS certificate of the FRITZ!Box has changed');
         this.name = 'CertificateMismatchError';
@@ -31,9 +34,20 @@ export interface Tr064Options {
     password: string;
     /** Use the TLS port reported by the box (recommended). */
     useTls: boolean;
-    /** SHA-256 fingerprint of the box certificate, as stored on first contact. */
+    /** Pin of the box certificate (see certPin), as stored on first contact. Older versions stored the certificate fingerprint. */
     pinnedFingerprint?: string;
     timeoutMs?: number;
+}
+
+/**
+ * Pin value of a certificate: SHA-256 of its public key. A certificate that is renewed with the same key still matches.
+ */
+export function certPin(raw: Buffer | undefined): string {
+    if (!raw?.length) {
+        return '';
+    }
+    const spki = new X509Certificate(raw).publicKey.export({ type: 'spki', format: 'der' });
+    return `sha256/${createHash('sha256').update(spki).digest('base64')}`;
 }
 
 /**
@@ -43,6 +57,8 @@ export interface Tr064Options {
  */
 export class PinnedAgent extends https.Agent {
     public seenFingerprint = '';
+    /** True once a pin from an older version (certificate fingerprint) matched and was replaced by the key pin. */
+    public upgraded = false;
 
     /** Without a stored pin the first certificate seen becomes the pin (trust on first use). */
     public constructor(public pinned: string | undefined) {
@@ -70,17 +86,28 @@ export class PinnedAgent extends https.Agent {
         socket.once('timeout', onTimeout);
         socket.once('secureConnect', () => {
             socket.off('timeout', onTimeout);
-            const fp = socket.getPeerCertificate()?.fingerprint256 ?? '';
+            const peer = socket.getPeerCertificate();
+            const fp = peer?.fingerprint256 ?? '';
+            let pin = '';
+            try {
+                pin = certPin(peer?.raw);
+            } catch {
+                // unreadable certificate, handled below
+            }
             this.seenFingerprint = fp;
-            if (!fp) {
+            if (!fp || !pin) {
                 socket.destroy();
-                finish(new Error('The FRITZ!Box sent no certificate'), socket);
+                finish(new Error('The FRITZ!Box sent no usable certificate'), socket);
                 return;
             }
-            this.pinned ??= fp;
-            if (fp !== this.pinned) {
+            if (this.pinned && !this.pinned.startsWith('sha256/') && this.pinned === fp) {
+                this.pinned = pin;
+                this.upgraded = true;
+            }
+            this.pinned ??= pin;
+            if (pin !== this.pinned) {
                 socket.destroy();
-                finish(new CertificateMismatchError(this.pinned, fp), socket);
+                finish(new CertificateMismatchError(this.pinned, pin, fp), socket);
                 return;
             }
             finish(null, socket);
@@ -164,9 +191,14 @@ export class Tr064Client {
         return this.agent?.seenFingerprint ?? '';
     }
 
-    /** The certificate this client trusts: the stored one, or the first one it saw. */
+    /** The pin this client trusts: the stored one, or the one of the first certificate it saw. */
     public get pinnedFingerprint(): string {
         return this.agent?.pinned ?? '';
+    }
+
+    /** The stored pin was in the old format and has been replaced, it must be saved again. */
+    public get pinUpgraded(): boolean {
+        return this.agent?.upgraded ?? false;
     }
 
     public get device(): DeviceDescription | undefined {

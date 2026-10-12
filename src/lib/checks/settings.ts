@@ -12,6 +12,18 @@ export function parseUserList(xml: string): string[] {
     return arr.map(u => String(typeof u === 'object' ? (u['#text'] ?? '') : u)).filter(Boolean);
 }
 
+/**
+ * True if the rights list of X_AVM-DE_GetCurrentUser grants at least read access to the box settings.
+ * Each path is paired with its own access value, so a right of another area cannot count.
+ */
+export function hasSettingsRight(rights: string): boolean {
+    const pairs = [...rights.matchAll(/<path>\s*([^<]*?)\s*<\/path>\s*<access>\s*([^<]*?)\s*<\/access>/gi)];
+    if (pairs.length) {
+        return pairs.some(([, path, access]) => /^boxadmin$/i.test(path) && /^read(write|only)$/i.test(access));
+    }
+    return /einstellungen/i.test(rights);
+}
+
 export interface SettingsResult {
     findings: Finding[];
     /** Undefined if the box did not hand out the user list, so it must not become the baseline. */

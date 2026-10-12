@@ -8,7 +8,7 @@ import { checkExposure } from './lib/checks/exposure';
 import { describeHosts, readHosts } from './lib/checks/devices';
 import { evaluateEvents, readDeviceLog } from './lib/checks/events';
 import { checkFirmware } from './lib/checks/firmware';
-import { checkSettings } from './lib/checks/settings';
+import { checkSettings, hasSettingsRight } from './lib/checks/settings';
 import { L, type CheckContext } from './lib/checks/common';
 import { runDiagnostics } from './lib/diagnostics';
 import { discoverBoxes } from './lib/discovery';
@@ -83,6 +83,8 @@ class FbGuard extends utils.Adapter {
     private timers: ioBroker.Interval[] = [];
     /** Set after a login or certificate problem; no further logins until the config changes. */
     private blocked = false;
+    /** Pin of the certificate that caused the last mismatch, "trust again" accepts exactly this one. */
+    private pendingPin?: string;
     private seenEvents: SeenEvents = {};
     private eventsInitialized = false;
     /** Older versions stored a different format: take the next read as baseline, without alerts. */
@@ -304,13 +306,13 @@ class FbGuard extends utils.Adapter {
             return undefined;
         }
         if (!this.client) {
-            const pin = await this.getStateAsync('info.certFingerprint');
+            const host = this.config.host.trim();
             const client = new Tr064Client({
-                host: this.config.host.trim(),
+                host,
                 username: this.config.username,
                 password: this.config.password,
                 useTls: this.config.useTls !== false,
-                pinnedFingerprint: typeof pin?.val === 'string' ? pin.val : undefined,
+                pinnedFingerprint: await this.storedPin(host),
             });
             const desc = await client.connect();
             await this.setState('info.model', desc.modelName, true);
@@ -319,15 +321,44 @@ class FbGuard extends utils.Adapter {
         return this.client;
     }
 
+    /**
+     * The stored pin, if it belongs to this host. A pin of another host is dropped,
+     * otherwise replacing the box or changing the address would look like an attack.
+     */
+    private async storedPin(host: string): Promise<string | undefined> {
+        const pin = await this.getStateAsync('info.certFingerprint');
+        if (typeof pin?.val !== 'string' || !pin.val) {
+            return undefined;
+        }
+        const pinHost = await this.getStateAsync('info.certHost');
+        const h = host.toLowerCase();
+        if (typeof pinHost?.val !== 'string' || !pinHost.val) {
+            // pins from 0.1.x have no host yet
+            await this.setState('info.certHost', h, true);
+            return pin.val;
+        }
+        if (pinHost.val !== h) {
+            this.log.info(
+                `FRITZ!Box address changed from ${pinHost.val} to ${h}, the certificate will be trusted again.`,
+            );
+            await this.setState('info.certFingerprint', '', true);
+            return undefined;
+        }
+        return pin.val;
+    }
+
     private async afterCall(): Promise<void> {
         // the client pins the first certificate it sees, so store exactly that one
         const fp = this.client?.pinnedFingerprint;
         if (fp) {
             const pin = await this.getStateAsync('info.certFingerprint');
-            if (!pin?.val) {
-                // trust on first use
+            if (!pin?.val || this.client?.pinUpgraded) {
+                // trust on first use, or the old pin format matched and is replaced
                 await this.setState('info.certFingerprint', fp, true);
-                this.log.info('Stored the TLS certificate fingerprint of the FRITZ!Box.');
+                await this.setState('info.certHost', this.config.host.trim().toLowerCase(), true);
+                if (!pin?.val) {
+                    this.log.info('Stored the TLS certificate of the FRITZ!Box.');
+                }
             } else if (pin.val !== fp) {
                 throw new CertificateMismatchError(String(pin.val), fp);
             }
@@ -357,8 +388,9 @@ class FbGuard extends utils.Adapter {
         this.client = undefined;
         if (err instanceof CertificateMismatchError) {
             this.blocked = true;
+            this.pendingPin = err.actual;
             this.log.error(
-                `The TLS certificate of the FRITZ!Box changed. No more logins until you confirm it in the settings. New fingerprint: ${err.actual}`,
+                `The TLS certificate of the FRITZ!Box changed. No more logins until you confirm it in the settings. New certificate SHA-256: ${err.fingerprint || err.actual}`,
             );
             await this.notifier.send(
                 'critical',
@@ -585,7 +617,6 @@ class FbGuard extends utils.Adapter {
                 ports: L(this.lang, 'Offene Ports', 'Open ports'),
                 settings: L(this.lang, 'Einstellungen', 'Settings'),
                 firmware: 'Firmware',
-                connection: L(this.lang, 'Verbindung', 'Connection'),
             };
             await this.notifier.send(
                 worst.severity,
@@ -877,37 +908,27 @@ class FbGuard extends utils.Adapter {
                     reply({ native: { confirmations: rows } });
                     break;
                 }
-                case 'acknowledge':
-                case 'unacknowledge': {
-                    const fid = String(data.id ?? '').trim();
-                    if (!fid) {
-                        reply({
-                            error: L(this.lang, 'Bitte zuerst einen Fund auswählen.', 'Please select a finding first.'),
-                        });
-                    } else if (!(await this.setAck(fid, obj.command === 'acknowledge'))) {
-                        reply({ error: L(this.lang, 'Unbekannter Fund.', 'Unknown finding.') });
-                    } else {
-                        reply({
-                            result: L(
-                                this.lang,
-                                'Gespeichert. Die Liste aktualisiert sich beim nächsten Öffnen der Einstellungen.',
-                                'Saved. The list updates the next time you open the settings.',
-                            ),
-                        });
-                    }
-                    break;
-                }
                 case 'trustCertificate': {
-                    await this.setState('info.certFingerprint', '', true);
+                    // trust exactly the certificate the alert was about, not whatever shows up next
+                    const pending = this.pendingPin;
+                    await this.setState('info.certFingerprint', pending ?? '', true);
+                    await this.setState('info.certHost', this.config.host.trim().toLowerCase(), true);
+                    this.pendingPin = undefined;
                     this.blocked = false;
                     this.client?.close();
                     this.client = undefined;
                     reply({
-                        result: L(
-                            this.lang,
-                            'Das aktuelle Zertifikat wird bei der nächsten Verbindung übernommen.',
-                            'The current certificate will be trusted on the next connection.',
-                        ),
+                        result: pending
+                            ? L(
+                                  this.lang,
+                                  'Das neue Zertifikat aus der Warnung ist jetzt vertraut.',
+                                  'The new certificate from the alert is trusted now.',
+                              )
+                            : L(
+                                  this.lang,
+                                  'Das aktuelle Zertifikat wird bei der nächsten Verbindung übernommen.',
+                                  'The current certificate will be trusted on the next connection.',
+                              ),
                     });
                     break;
                 }
@@ -931,24 +952,29 @@ class FbGuard extends utils.Adapter {
             };
         }
         const pin = await this.getStateAsync('info.certFingerprint');
+        const pinHost = await this.getStateAsync('info.certHost');
+        const sameHost = host.toLowerCase() === String(pinHost?.val || this.config.host.trim()).toLowerCase();
         const client = new Tr064Client({
             host,
             username: String(data.username),
             password: String(data.password),
             useTls: data.useTls !== false,
-            pinnedFingerprint: host === this.config.host && typeof pin?.val === 'string' ? pin.val : undefined,
+            pinnedFingerprint: sameHost && typeof pin?.val === 'string' && pin.val ? pin.val : undefined,
         });
         try {
             const desc = await client.connect();
             const me = await client.call('LANConfigSecurity:1', 'X_AVM-DE_GetCurrentUser');
             const rights = me['NewX_AVM-DE_CurrentUserRights'] ?? '';
-            const hasSettings =
-                /BoxAdmin[^]*?readwrite|BoxAdmin[^]*?readonly/i.test(rights) || /einstellungen/i.test(rights);
+            const hasSettings = hasSettingsRight(rights);
             const lines = [
                 `${desc.modelName}, FRITZ!OS ${desc.firmware}`,
                 L(this.lang, 'Anmeldung erfolgreich.', 'Login successful.'),
                 data.useTls !== false
-                    ? L(this.lang, 'Verbindung verschlüsselt (TLS).', 'Connection encrypted (TLS).')
+                    ? L(
+                          this.lang,
+                          `Verbindung verschlüsselt (TLS), Zertifikat SHA-256: ${client.certificateFingerprint}`,
+                          `Connection encrypted (TLS), certificate SHA-256: ${client.certificateFingerprint}`,
+                      )
                     : L(this.lang, 'Achtung: Verbindung unverschlüsselt.', 'Warning: connection not encrypted.'),
                 hasSettings
                     ? L(this.lang, 'Rechte: ausreichend.', 'Rights: sufficient.')
@@ -974,8 +1000,8 @@ class FbGuard extends utils.Adapter {
                 return {
                     error: L(
                         this.lang,
-                        'Das Zertifikat der Box hat sich geändert. Bitte unten "Zertifikat neu übernehmen" nutzen, wenn das erwartet war.',
-                        'The certificate changed. Use "Trust certificate again" below if this was expected.',
+                        `Das Zertifikat der Box hat sich geändert (neu, SHA-256: ${err.fingerprint}). Bitte unten "Zertifikat neu übernehmen" nutzen, wenn das erwartet war.`,
+                        `The certificate changed (new, SHA-256: ${err.fingerprint}). Use "Trust certificate again" below if this was expected.`,
                     ),
                 };
             }

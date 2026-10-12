@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 export type Severity = 'info' | 'warning' | 'critical';
-export type Category = 'ports' | 'firmware' | 'settings' | 'connection';
+export type Category = 'ports' | 'firmware' | 'settings';
 
 export interface Finding {
     /** Stable id. For ports it contains port, protocol and target, so any change creates a new finding. */
