@@ -1,6 +1,6 @@
 {
   "name": "iobroker.fb-guard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Security guard for your FRITZ!Box router: reports failed logins, open ports, pending firmware updates and weak settings via Telegram or e-mail",
   "author": {
     "name": "Flyor",
