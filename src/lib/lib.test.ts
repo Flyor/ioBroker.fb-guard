@@ -2,7 +2,7 @@
 import { strict as assert } from 'node:assert';
 import { deviceFromMessage, isKnownWithNewAddress, isRandomMac, parseHostListXml } from './checks/devices';
 import { evaluateEvents } from './checks/events';
-import { isNewer, modelSlug, parseVendorInfo } from './checks/firmware';
+import { isNewer, isNewerLab, labParts, modelSlug, parseLabPage, parseVendorInfo } from './checks/firmware';
 import { parseUserList } from './checks/settings';
 import { maskLogLine, maskText, redact } from './diagnostics';
 import { FindingStore, type Finding } from './findings';
@@ -276,6 +276,8 @@ describe('firmware', () => {
 
     it('reads the vendor info file', () => {
         assert.equal(parseVendorInfo('Produkt: FRITZ!Box 7590\r\nVersion: 154.08.25\r\nSprache: de'), '154.08.25');
+        // current format of the vendor file
+        assert.equal(parseVendorInfo('Produkt: FRITZ!Box 7590\nVersion: FRITZ!OS 8.25\nSprache: Deutsch'), '8.25');
         assert.equal(parseVendorInfo('nothing'), undefined);
     });
 });
@@ -429,5 +431,24 @@ describe('render', () => {
         assert.ok(m.text.indexOf('Warnings (1)') < m.text.indexOf('Notes (2)'));
         assert.ok(m.text.includes('• T c'));
         assert.equal(summaryMessage([], { score: 100, acked: 0 }, 'en').severity, 'info');
+    });
+});
+
+describe('lab firmware', () => {
+    const page =
+        '<div><span>FRITZ!Box 7590 AX</span> <span>8.40-137240</span> <span>2026-10-09</span></div>' +
+        '<div><span>FRITZ!Box 7590</span>&nbsp;<span>8.40-137237</span>\n<span>2026-10-09</span></div>';
+    it('finds the version of the exact model', () => {
+        assert.equal(parseLabPage(page, 'FRITZ!Box 7590'), '8.40-137237');
+        assert.equal(parseLabPage(page, 'FRITZ!Box 7590 AX'), '8.40-137240');
+        assert.equal(parseLabPage(page, 'FRITZ!Box 7530'), undefined);
+    });
+    it('compares lab builds', () => {
+        assert.deepEqual(labParts('154.08.21,124969'), [8, 21, 124969]);
+        assert.deepEqual(labParts('154.08.40-137237'), [8, 40, 137237]);
+        assert.ok(isNewerLab('8.40-137237', '154.08.40-136000'));
+        assert.ok(isNewerLab('8.40-137237', '154.08.21,124969'));
+        assert.ok(!isNewerLab('8.40-137237', '154.08.40-137237'));
+        assert.ok(!isNewerLab('8.40-137237', '154.08.50'));
     });
 });

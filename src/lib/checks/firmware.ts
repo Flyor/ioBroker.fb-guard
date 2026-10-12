@@ -10,6 +10,9 @@ export interface FirmwareInfo {
     availableVersion?: string;
     autoUpdateMode?: string;
     vendorLatest?: string;
+    /** "Release" for normal firmware, anything else is a lab (beta) build. */
+    buildType?: string;
+    labLatest?: string;
 }
 
 /**
@@ -50,12 +53,53 @@ export function isNewer(candidate: string, installed: string): boolean {
 }
 
 export function parseVendorInfo(text: string): string | undefined {
-    return /^\s*Version\s*:\s*([\d.]+)/im.exec(text)?.[1];
+    return /^\s*Version\s*:\s*(?:FRITZ!OS\s*)?([\d.]+)/im.exec(text)?.[1];
 }
 
-function httpsGet(url: string, timeoutMs = 10_000): Promise<string | undefined> {
+/**
+ * Lab versions with build number: "154.08.40-137237", "8.40-137237" or "154.08.21,124969" -> [8, 40, 137237].
+ */
+export function labParts(v: string): number[] {
+    const m = /(\d+)\.(\d+)\s*[-,]\s*(\d+)\s*$/.exec(v.trim());
+    return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [...versionParts(v), 0];
+}
+
+export function isNewerLab(candidate: string, installed: string): boolean {
+    const a = labParts(candidate);
+    const b = labParts(installed);
+    for (let i = 0; i < 3; i++) {
+        if ((a[i] ?? 0) !== (b[i] ?? 0)) {
+            return (a[i] ?? 0) > (b[i] ?? 0);
+        }
+    }
+    return false;
+}
+
+/**
+ * Finds the lab version of a model on the lab page, e.g. "FRITZ!Box 7590 8.40-137237 2026-10-09" -> "8.40-137237".
+ * The model name must be followed directly by the version, so "7590" does not match "7590 AX".
+ */
+export function parseLabPage(html: string, model: string): string | undefined {
+    const text = html
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ');
+    const name = model
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(?:^|[^\\w!])${name} (\\d+\\.\\d+-\\d+) \\d{4}-\\d{2}-\\d{2}`, 'i').exec(text)?.[1];
+}
+
+function httpsGet(url: string, timeoutMs = 10_000, maxBytes = 256 * 1024): Promise<string | undefined> {
     return new Promise(resolve => {
-        const req = https.get(url, { timeout: timeoutMs, signal: AbortSignal.timeout(3 * timeoutMs) }, res => {
+        const opts = {
+            timeout: timeoutMs,
+            signal: AbortSignal.timeout(3 * timeoutMs),
+            // the web shop rejects requests without a user agent
+            headers: { 'User-Agent': 'ioBroker.fb-guard (+https://github.com/Flyor/ioBroker.fb-guard)' },
+        };
+        const req = https.get(url, opts, res => {
             if (res.statusCode !== 200) {
                 res.resume();
                 resolve(undefined);
@@ -65,7 +109,7 @@ function httpsGet(url: string, timeoutMs = 10_000): Promise<string | undefined> 
             res.setEncoding('utf8');
             res.on('data', (c: string) => {
                 body += c;
-                if (body.length > 256 * 1024) {
+                if (body.length > maxBytes) {
                     req.destroy();
                 }
             });
@@ -99,6 +143,18 @@ export async function fetchVendorLatest(model: string): Promise<string | undefin
     return undefined;
 }
 
+/**
+ * Reads the public lab page of the vendor, never firmware files.
+ */
+export async function fetchLabLatest(model: string): Promise<string | undefined> {
+    const html = await httpsGet(
+        'https://fritz.com/pages/fritz-labor-frisch-aus-der-entwicklung',
+        15_000,
+        2 * 1024 * 1024,
+    );
+    return html ? parseLabPage(html, model) : undefined;
+}
+
 export async function checkFirmware(
     ctx: CheckContext,
     opts: {
@@ -123,7 +179,9 @@ export async function checkFirmware(
         updateAvailable: isOn(ui?.NewUpgradeAvailable),
         availableVersion: ui?.['NewX_AVM-DE_Version'] || undefined,
         autoUpdateMode: uiEx?.['NewX_AVM-DE_AutoUpdateMode'] || ui?.['NewX_AVM-DE_AutoUpdateMode'] || undefined,
+        buildType: ui?.['NewX_AVM-DE_BuildType'] || undefined,
     };
+    const isLab = !!info.buildType && !/^release$/i.test(info.buildType);
     const findings: Finding[] = [];
 
     if (info.updateAvailable) {
@@ -166,6 +224,48 @@ export async function checkFirmware(
             ),
             ackable: true,
         });
+    }
+
+    if (isLab) {
+        findings.push({
+            id: 'firmware:lab',
+            category: 'firmware',
+            severity: 'info',
+            title: L(lang, 'Labor-Firmware installiert', 'Lab firmware installed'),
+            detail: L(
+                lang,
+                `Auf der Box läuft eine Labor-Version (${installed}). Labor-Versionen sind Testversionen und können Fehler haben, auch Sicherheitsfehler.`,
+                `The box runs a lab version (${installed}). Lab versions are test builds and may contain bugs, including security bugs.`,
+            ),
+            advice: L(
+                lang,
+                'Wenn du das bewusst nutzt, hier bestätigen. Labor-Versionen regelmäßig aktualisieren oder zurück auf die normale Version wechseln.',
+                'If you use it on purpose, confirm it here. Keep lab versions up to date or switch back to the normal version.',
+            ),
+            ackable: true,
+        });
+    }
+
+    if (opts.vendorCheck && model && isLab) {
+        info.labLatest = await fetchLabLatest(model);
+        if (info.labLatest && installed && isNewerLab(info.labLatest, installed) && !info.updateAvailable) {
+            findings.push({
+                id: `firmware:lab:${info.labLatest}`,
+                category: 'firmware',
+                severity: 'warning',
+                title: L(lang, 'Neuere Labor-Version verfügbar', 'Newer lab version available'),
+                detail: L(
+                    lang,
+                    `Auf der Labor-Seite des Herstellers gibt es ${info.labLatest}, installiert ist ${installed}.`,
+                    `The vendor lab page offers ${info.labLatest}, installed is ${installed}.`,
+                ),
+                advice: L(
+                    lang,
+                    'Labor-Versionen bekommen Fehlerbehebungen nur über neuere Labor-Versionen. Unter System > Update oder von der Labor-Seite aktualisieren.',
+                    'Lab versions only get fixes through newer lab versions. Update under System > Update or from the lab page.',
+                ),
+            });
+        }
     }
 
     if (opts.vendorCheck && model) {
