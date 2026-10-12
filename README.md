@@ -80,6 +80,8 @@ FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This pro
 ### 0.1.0 (2026-10-11)
 * (Flyor) First release: failed logins, open ports, firmware and settings checks, findings and confirmation right in the settings, setup wizard, Telegram and e-mail
 
+Older changes are in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
+
 ## License
 MIT License
 
