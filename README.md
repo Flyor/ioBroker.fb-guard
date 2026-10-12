@@ -24,7 +24,7 @@ fb-guard reads it for you. It reports failed and unexpected logins to the box it
 - **Failed Wi-Fi logins** (wrong key), grouped per device, with a hint whether the box already knows the device
 - **Logins from the internet** that are not on your list of known addresses
 - **Open ports**: port forwardings, MyFRITZ, remote access, FTP over the internet, TR-069 and UPnP. Each port comes with a short explanation of what it is usually used for. Ports you opened on purpose can be confirmed once.
-- **Firmware**: update available but not installed, automatic updates off, lab (beta) firmware and newer lab versions
+- **Firmware**: update available but not installed, automatic updates off, lab (beta) firmware and newer lab versions, and whether your model still gets updates at all or it is time for a new box
 - **Settings**: factory password still active, login without password, two-factor authentication off, new box users, open or weak Wi-Fi encryption, WPS
 - **Box restarts** (the event log is cleared on restart)
 - A **score from 0 to 100** for your dashboard
@@ -45,7 +45,7 @@ All findings are listed in the settings, tab "Findings", each with an explanatio
 - The password is stored encrypted in ioBroker and is never written to the log.
 - The connection to the box uses TLS. The key of the box certificate is remembered on first use, and the adapter stops logging in if it changes. "Test connection" shows the certificate fingerprint, so you can compare it with the box.
 - After a rejected login the adapter stops trying, so it does not lock you out.
-- External services are off by default. Right now there is just one: the firmware comparison. It reads the version file from the vendor download server and, for lab firmware, the public lab page on fritz.com. Only the model name is sent.
+- External services are off by default. Right now there is just one: the firmware comparison. It reads the version file from the vendor download server, the public product support list on fritz.com and, for lab firmware, the public lab page. At most the model name is sent.
 - The port test only checks your own WAN address.
 - Diagnostics mask passwords, keys, user names, addresses and serial numbers.
 - Tip: use the ioBroker admin over HTTPS, so your entries are encrypted on the way as well.
@@ -70,6 +70,7 @@ FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This pro
 * (Flyor) Lab firmware is reported, and newer lab versions are found on the vendor lab page
 * (Flyor) README explains what the adapter is for
 * (Flyor) Failed Wi-Fi logins (wrong key) are reported per device
+* (Flyor) Reports when the model gets no more updates, using the vendor support list
 
 ### 0.1.1 (2026-10-11)
 * (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up

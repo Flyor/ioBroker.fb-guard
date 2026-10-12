@@ -15,7 +15,7 @@ fb-guard liest es für dich. Gemeldet werden fehlgeschlagene und unerwartete Anm
 - **Fehlgeschlagene WLAN-Anmeldungen** (falscher Schlüssel), je Gerät zusammengefasst, mit dem Hinweis, ob die Box das Gerät schon kennt
 - **Anmeldungen aus dem Internet** von Adressen, die nicht auf deiner Liste bekannter Adressen stehen
 - **Offene Ports**: Portfreigaben, MyFRITZ!, Fernzugang, FTP über das Internet, TR-069 und UPnP, jeweils mit einer kurzen Erklärung, wofür der Port meist da ist
-- **Firmware**: Update verfügbar, aber nicht installiert, automatische Updates aus, Labor-Firmware und neuere Labor-Versionen
+- **Firmware**: Update verfügbar, aber nicht installiert, automatische Updates aus, Labor-Firmware und neuere Labor-Versionen, und ob dein Modell überhaupt noch Updates bekommt oder eine neue Box fällig ist
 - **Einstellungen**: Werkskennwort aktiv, Anmeldung ohne Kennwort, Zwei-Faktor-Anmeldung aus, neue Box-Benutzer, offenes oder schwaches WLAN, WPS
 - **Neustarts der Box** (dabei wird das Ereignisprotokoll geleert)
 - Ein **Sicherheitswert von 0 bis 100** für deine Visualisierung
@@ -36,7 +36,7 @@ Alle Funde stehen in den Einstellungen im Reiter "Funde", jeweils mit Erklärung
 - Das Kennwort wird in ioBroker verschlüsselt gespeichert und nie ins Log geschrieben.
 - Die Verbindung zur Box läuft über TLS. Der Schlüssel des Box-Zertifikats wird beim ersten Verbinden gemerkt. Ändert er sich, meldet sich der Adapter nicht mehr an. "Verbindung testen" zeigt den Fingerabdruck des Zertifikats, damit du ihn mit der Box vergleichen kannst.
 - Nach einer abgelehnten Anmeldung hört der Adapter auf, es weiter zu versuchen, damit er dich nicht aussperrt.
-- Externe Dienste sind ab Werk aus. Derzeit gibt es nur einen: den Firmware-Abgleich. Er liest die Versionsdatei vom Download-Server des Herstellers und bei Labor-Firmware die öffentliche Labor-Seite auf fritz.com. Übertragen wird nur der Modellname.
+- Externe Dienste sind ab Werk aus. Derzeit gibt es nur einen: den Firmware-Abgleich. Er liest die Versionsdatei vom Download-Server des Herstellers, die öffentliche Liste zur Produktunterstützung auf fritz.com und bei Labor-Firmware die öffentliche Labor-Seite. Übertragen wird höchstens der Modellname.
 - Der Port-Test prüft nur deine eigene WAN-Adresse.
 - Die Diagnose schwärzt Kennwörter, Schlüssel, Benutzernamen, Adressen und Seriennummern.
 - Tipp: Öffne den ioBroker-Admin über HTTPS, dann sind deine Eingaben auch auf dem Weg verschlüsselt.

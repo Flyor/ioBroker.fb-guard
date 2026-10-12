@@ -2,7 +2,17 @@
 import { strict as assert } from 'node:assert';
 import { deviceFromMessage, isKnownWithNewAddress, isRandomMac, parseHostListXml } from './checks/devices';
 import { evaluateEvents } from './checks/events';
-import { isNewer, isNewerLab, labParts, modelSlug, parseLabPage, parseVendorInfo } from './checks/firmware';
+import {
+    isNewer,
+    isNewerLab,
+    labParts,
+    lifecycleFindings,
+    modelSlug,
+    parseLabPage,
+    parseSupportStatus,
+    parseVendorDate,
+    parseVendorInfo,
+} from './checks/firmware';
 import { parseUserList } from './checks/settings';
 import { maskLogLine, maskText, redact } from './diagnostics';
 import { FindingStore, type Finding } from './findings';
@@ -303,6 +313,59 @@ describe('firmware', () => {
         // current format of the vendor file
         assert.equal(parseVendorInfo('Produkt: FRITZ!Box 7590\nVersion: FRITZ!OS 8.25\nSprache: Deutsch'), '8.25');
         assert.equal(parseVendorInfo('nothing'), undefined);
+        assert.equal(parseVendorDate('Version: FRITZ!OS 6.88\nRelease-Datum:  04.09.2023\n'), '2023-09-04');
+        assert.equal(parseVendorDate('Version: FRITZ!OS 8.25\n'), undefined);
+    });
+
+    it('reads the vendor support list', () => {
+        const prod = (name: string, eod: string, eom: string): object => ({
+            name,
+            data: { fields: { eod: { data: eod }, eom: { data: eom }, eos: { data: 'nein' } } },
+        });
+        const json = {
+            data: {
+                products: {
+                    fritzbox: {
+                        a: prod('FRITZ!Box 7590 AX', 'nein', 'nein'),
+                        b: prod('FRITZ!Box 7590', 'ja', 'nein'),
+                        c: prod('FRITZ!Box 7490', 'ja', 'ja'),
+                    },
+                    fritzfon: 'broken',
+                },
+            },
+        };
+        assert.deepEqual(parseSupportStatus(json, 'FRITZ!Box 7590'), {
+            endOfSale: true,
+            endOfUpdates: false,
+            endOfSupport: false,
+        });
+        assert.equal(parseSupportStatus(json, 'fritz!box  7490')?.endOfUpdates, true);
+        assert.equal(parseSupportStatus(json, 'FRITZ!Box 7590 AX')?.endOfSale, false);
+        assert.equal(parseSupportStatus(json, 'FRITZ!Box 7390'), undefined);
+        assert.equal(parseSupportStatus(null, 'FRITZ!Box 7590'), undefined);
+    });
+
+    it('tells when a model gets no more updates', () => {
+        const now = Date.parse('2026-10-12');
+        const ok = { endOfSale: false, endOfUpdates: false, endOfSupport: false };
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7590 AX', ok, '2026-03-26', 'en', now), []);
+        const sold = lifecycleFindings('FRITZ!Box 7590', { ...ok, endOfSale: true }, '2026-03-26', 'en', now);
+        assert.equal(sold[0]?.id, 'firmware:end-of-sale');
+        assert.equal(sold[0]?.severity, 'info');
+        const eol = lifecycleFindings(
+            'FRITZ!Box 7490',
+            { ...ok, endOfSale: true, endOfUpdates: true },
+            '2026-01-08',
+            'en',
+            now,
+        );
+        assert.equal(eol.length, 1);
+        assert.equal(eol[0]?.id, 'firmware:eol');
+        assert.equal(eol[0]?.severity, 'warning');
+        // not on the list: only the age of the newest firmware counts
+        assert.equal(lifecycleFindings('FRITZ!Box 7390', undefined, '2023-09-04', 'en', now)[0]?.id, 'firmware:stale');
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, '2026-01-01', 'en', now), []);
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, undefined, 'en', now), []);
     });
 });
 

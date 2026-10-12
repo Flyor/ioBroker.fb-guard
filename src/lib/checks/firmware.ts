@@ -13,7 +13,23 @@ export interface FirmwareInfo {
     /** "Release" for normal firmware, anything else is a lab (beta) build. */
     buildType?: string;
     labLatest?: string;
+    /** Release date of the newest vendor firmware (ISO date). */
+    vendorDate?: string;
+    support?: SupportStatus;
 }
+
+/** Flags from the vendor product support list. */
+export interface SupportStatus {
+    /** No longer sold. */
+    endOfSale: boolean;
+    /** No more firmware updates. */
+    endOfUpdates: boolean;
+    /** No more personal support. */
+    endOfSupport: boolean;
+}
+
+/** Vendor lifecycle data younger than this is fine, older means "no updates for a long time". */
+const STALE_DAYS = 730;
 
 /**
  * "FRITZ!Box 7590 AX" -> "fritzbox-7590-ax" (folder name on the vendor download server).
@@ -57,6 +73,120 @@ export function parseVendorInfo(text: string): string | undefined {
 }
 
 /**
+ * "Release-Datum: 04.09.2023" or "Release date: 2023-09-04" -> ISO date. Newer files often have no date.
+ */
+export function parseVendorDate(text: string): string | undefined {
+    const de = /^\s*Release[- ]?(?:Datum|date)\s*:\s*(\d{1,2})\.(\d{1,2})\.(\d{4})/im.exec(text);
+    if (de) {
+        return `${de[3]}-${de[2].padStart(2, '0')}-${de[1].padStart(2, '0')}`;
+    }
+    return /^\s*Release[- ]?(?:Datum|date)\s*:\s*(\d{4}-\d{2}-\d{2})/im.exec(text)?.[1];
+}
+
+/**
+ * Finds a model in the vendor product support list (JSON behind fritz.com/pages/status-produktunterstuetzung).
+ * Only exact model names count, "FRITZ!Box 7590" does not match "FRITZ!Box 7590 AX".
+ */
+export function parseSupportStatus(json: unknown, model: string): SupportStatus | undefined {
+    const norm = (s: string): string => s.toLowerCase().replace(/\s+/g, ' ').trim();
+    const want = norm(model);
+    const groups = (json as { data?: { products?: Record<string, unknown> } })?.data?.products;
+    if (!want || !groups || typeof groups !== 'object') {
+        return undefined;
+    }
+    for (const group of Object.values(groups)) {
+        if (!group || typeof group !== 'object') {
+            continue;
+        }
+        for (const p of Object.values(group as Record<string, unknown>)) {
+            const prod = p as { name?: unknown; data?: { fields?: Record<string, { data?: unknown }> } };
+            if (typeof prod?.name !== 'string' || norm(prod.name) !== want) {
+                continue;
+            }
+            const f = prod.data?.fields ?? {};
+            const yes = (k: string): boolean => typeof f[k]?.data === 'string' && /^(ja|yes|true)$/i.test(f[k].data);
+            return { endOfSale: yes('eod'), endOfUpdates: yes('eom'), endOfSupport: yes('eos') };
+        }
+    }
+    return undefined;
+}
+
+/**
+ * Does the model still get updates? Uses the vendor support list, and for models missing there
+ * the age of the newest firmware on the download server.
+ */
+export function lifecycleFindings(
+    model: string,
+    support: SupportStatus | undefined,
+    vendorDate: string | undefined,
+    lang: CheckContext['lang'],
+    now = Date.now(),
+): Finding[] {
+    const advice = L(
+        lang,
+        'Neue Sicherheitslücken werden für dieses Modell wahrscheinlich nicht mehr geschlossen. Einen Austausch einplanen, bis dahin Fernzugang, MyFRITZ! und Portfreigaben so weit wie möglich abschalten. Wenn du das bewusst so lässt, hier bestätigen.',
+        'New security holes will likely not be fixed for this model any more. Plan a replacement, until then turn off remote access, MyFRITZ! and port forwards as far as possible. If you keep it on purpose, confirm it here.',
+    );
+    if (support?.endOfUpdates) {
+        return [
+            {
+                id: 'firmware:eol',
+                category: 'firmware',
+                severity: 'warning',
+                title: L(lang, 'Keine Updates mehr für dieses Modell', 'No more updates for this model'),
+                detail: L(
+                    lang,
+                    `Laut Hersteller bekommt die ${model} keine Firmware-Updates mehr. Einzelne Notfall-Updates sind möglich, aber nicht zugesagt.`,
+                    `According to the vendor the ${model} gets no more firmware updates. Single emergency updates are possible but not promised.`,
+                ),
+                advice,
+                ackable: true,
+            },
+        ];
+    }
+    if (support?.endOfSale) {
+        return [
+            {
+                id: 'firmware:end-of-sale',
+                category: 'firmware',
+                severity: 'info',
+                title: L(lang, 'Modell wird nicht mehr verkauft', 'Model is no longer sold'),
+                detail: L(
+                    lang,
+                    `Die ${model} wird nicht mehr verkauft, bekommt laut Hersteller aber noch Updates. Das Ende der Updates ist damit absehbar.`,
+                    `The ${model} is no longer sold but still gets updates according to the vendor. The end of updates is in sight.`,
+                ),
+                advice: L(
+                    lang,
+                    'Noch kein Handlungsbedarf. Der Adapter meldet sich, sobald es keine Updates mehr gibt. Hier bestätigen, um diesen Hinweis auszublenden.',
+                    'Nothing to do yet. The adapter reports when updates stop. Confirm it here to hide this hint.',
+                ),
+                ackable: true,
+            },
+        ];
+    }
+    const released = vendorDate ? Date.parse(vendorDate) : NaN;
+    if (!support && released && now - released > STALE_DAYS * 86_400_000) {
+        return [
+            {
+                id: 'firmware:stale',
+                category: 'firmware',
+                severity: 'warning',
+                title: L(lang, 'Seit Jahren keine neue Firmware', 'No new firmware for years'),
+                detail: L(
+                    lang,
+                    `Die neueste Firmware für die ${model} ist vom ${vendorDate}. Das Modell steht nicht mehr in der Support-Liste des Herstellers und wird wohl nicht mehr gepflegt.`,
+                    `The newest firmware for the ${model} is from ${vendorDate}. The model is no longer on the vendor support list and is probably not maintained any more.`,
+                ),
+                advice,
+                ackable: true,
+            },
+        ];
+    }
+    return [];
+}
+
+/**
  * Lab versions with build number: "154.08.40-137237", "8.40-137237" or "154.08.21,124969" -> [8, 40, 137237].
  */
 export function labParts(v: string): number[] {
@@ -91,7 +221,15 @@ export function parseLabPage(html: string, model: string): string | undefined {
     return new RegExp(`(?:^|[^\\w!])${name} (\\d+\\.\\d+-\\d+) \\d{4}-\\d{2}-\\d{2}`, 'i').exec(text)?.[1];
 }
 
-function httpsGet(url: string, timeoutMs = 10_000, maxBytes = 256 * 1024): Promise<string | undefined> {
+async function httpsGet(url: string, timeoutMs = 10_000, maxBytes = 256 * 1024): Promise<string | undefined> {
+    return (await httpsFetch(url, timeoutMs, maxBytes))?.body;
+}
+
+function httpsFetch(
+    url: string,
+    timeoutMs = 10_000,
+    maxBytes = 256 * 1024,
+): Promise<{ body: string; lastModified?: string } | undefined> {
     return new Promise(resolve => {
         const opts = {
             timeout: timeoutMs,
@@ -115,7 +253,7 @@ function httpsGet(url: string, timeoutMs = 10_000, maxBytes = 256 * 1024): Promi
             });
             // a destroyed or aborted answer never ends, settle anyway (no-op after 'end')
             res.on('close', () => resolve(undefined));
-            res.on('end', () => resolve(body));
+            res.on('end', () => resolve({ body, lastModified: res.headers['last-modified'] }));
         });
         req.on('timeout', () => req.destroy());
         req.on('error', () => resolve(undefined));
@@ -126,21 +264,42 @@ function httpsGet(url: string, timeoutMs = 10_000, maxBytes = 256 * 1024): Promi
 /**
  * Reads only the public version text file from the vendor download server, never firmware images.
  */
-export async function fetchVendorLatest(model: string): Promise<string | undefined> {
+export async function fetchVendorLatest(model: string): Promise<{ version: string; date?: string } | undefined> {
     const slug = modelSlug(model);
     if (!slug) {
         return undefined;
     }
     for (const region of ['deutschland', 'other']) {
         for (const file of ['info_de.txt', 'info_en.txt']) {
-            const text = await httpsGet(`https://download.avm.de/fritzbox/${slug}/${region}/fritz.os/${file}`);
-            const v = text ? parseVendorInfo(text) : undefined;
-            if (v) {
-                return v;
+            const res = await httpsFetch(`https://download.avm.de/fritzbox/${slug}/${region}/fritz.os/${file}`);
+            const version = res ? parseVendorInfo(res.body) : undefined;
+            if (res && version) {
+                // newer files have no date, the file date on the server matches the release
+                const modified = res.lastModified ? new Date(res.lastModified) : undefined;
+                const date =
+                    parseVendorDate(res.body) ??
+                    (modified && !isNaN(modified.getTime()) ? modified.toISOString().slice(0, 10) : undefined);
+                return { version, date };
             }
         }
     }
     return undefined;
+}
+
+/**
+ * Reads the public product support list of the vendor (the data behind fritz.com/pages/status-produktunterstuetzung).
+ */
+export async function fetchSupportStatus(model: string): Promise<SupportStatus | undefined> {
+    const text = await httpsGet(
+        'https://fritz.com/apps/avm-api-plugin/status/products?language=en',
+        15_000,
+        4 * 1024 * 1024,
+    );
+    try {
+        return text ? parseSupportStatus(JSON.parse(text), model) : undefined;
+    } catch {
+        return undefined;
+    }
 }
 
 /**
@@ -269,7 +428,11 @@ export async function checkFirmware(
     }
 
     if (opts.vendorCheck && model) {
-        info.vendorLatest = await fetchVendorLatest(model);
+        const vendor = await fetchVendorLatest(model);
+        info.vendorLatest = vendor?.version;
+        info.vendorDate = vendor?.date;
+        info.support = await fetchSupportStatus(model);
+        findings.push(...lifecycleFindings(model, info.support, info.vendorDate, lang));
         if (info.vendorLatest && installed && isNewer(info.vendorLatest, installed) && !info.updateAvailable) {
             findings.push({
                 id: `firmware:vendor:${info.vendorLatest}`,
