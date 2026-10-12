@@ -268,6 +268,10 @@ describe('firmware', () => {
         assert.ok(isNewer('154.08.30', '8.25'));
         assert.ok(!isNewer('8.25', '154.08.25'));
         assert.ok(!isNewer('7.57', '8.25'));
+        // lab build with build number
+        assert.ok(isNewer('8.25', '154.08.21-120343'));
+        assert.ok(!isNewer('8.20', '154.08.21-120343'));
+        assert.ok(isNewer('8.25', '154.08.21,124969'));
     });
 
     it('reads the vendor info file', () => {

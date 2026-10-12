@@ -3,6 +3,12 @@
 
 Überwacht die Sicherheit deiner [FRITZ!Box](https://fritz.com) und meldet sich per Telegram oder E-Mail, wenn etwas auffällt.
 
+## Wozu
+
+Wer in die Oberfläche deiner Box kommt, hat das ganze Heimnetz in der Hand: Portfreigaben, DNS, Telefonie, VPN-Zugänge. Das kann über ein erratenes oder abgegriffenes Kennwort passieren, über eine Sicherheitslücke in der Firmware oder über eine Freigabe, die vor Jahren eingerichtet und vergessen wurde. Die Box schreibt das meiste davon ins Ereignisprotokoll, aber dort liest es niemand, und warnen tut sie nicht.
+
+fb-guard liest es für dich. Gemeldet werden fehlgeschlagene und unerwartete Anmeldungen an der Box selbst (Oberfläche, Fernzugang, Apps, TR-064), nicht gescheiterte WLAN-Verbindungen. Dazu prüft er die Einstellungen, die einen Angriff leichter machen.
+
 ## Was geprüft wird
 
 - **Fehlgeschlagene Anmeldungen** aus dem Ereignisprotokoll, je Adresse zusammengefasst, mit Zeit, Benutzername, Zugangsweg und der Angabe, ob sie aus dem Internet oder aus dem Heimnetz kamen
@@ -38,4 +44,4 @@ Keine Garantie: Der Adapter hilft, Probleme zu bemerken, macht dein Netz aber ni
 
 ## Haftungsausschluss
 
-FRITZ! und FRITZ!Box sind Marken der FRITZ! GmbH. Dieses Projekt steht in keiner Verbindung zur FRITZ! GmbH (ehemals AVM) und wird von ihr weder unterstützt noch geprüft. Keine Garantie für Sicherheit, Nutzung auf eigenes Risiko.
+FRITZ!, FRITZ!Box, FRITZ!OS und MyFRITZ! sind Marken der FRITZ! GmbH. Dieses Projekt steht in keiner Verbindung zur FRITZ! GmbH (ehemals AVM) und wird von ihr weder unterstützt noch geprüft. Keine Garantie für Sicherheit, Nutzung auf eigenes Risiko.

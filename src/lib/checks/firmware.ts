@@ -25,10 +25,11 @@ export function modelSlug(model: string): string {
 }
 
 /**
- * "154.08.25" or "08.25" -> [8, 25]
+ * "154.08.25" or "08.25" -> [8, 25]. Build numbers ("154.08.21-120343", "154.08.21,124969") are dropped.
  */
 export function versionParts(v: string): number[] {
     const parts = v
+        .replace(/[-,]\d+.*$/, '')
         .split(/[.\s-]+/)
         .filter(p => /^\d+$/.test(p))
         .map(Number);

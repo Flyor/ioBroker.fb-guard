@@ -12,6 +12,12 @@ Keeps an eye on the security of your [FRITZ!Box](https://fritz.com) and tells yo
 
 [German documentation](docs/de/README.md)
 
+## Why
+
+Whoever gets into the user interface of your box controls your whole home network: port forwardings, DNS, telephony, VPN access. That can happen through a guessed or leaked password, a security hole in the firmware, or a forwarding that was opened long ago and forgotten. The box writes most of this to its event log, but nobody reads it, and it does not warn you.
+
+fb-guard reads it for you. It reports failed and unexpected logins to the box itself (user interface, remote access, apps, TR-064), not failed Wi-Fi connections, and keeps an eye on the settings that make an attack easier.
+
 ## What it checks
 
 - **Failed logins** from the event log, grouped per address, with time, user name, access type and whether it came from the internet or your home network
@@ -47,7 +53,7 @@ No guarantee: this adapter helps you notice problems, it does not make your netw
 
 ## Disclaimer
 
-FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH. This project is not affiliated with or endorsed by FRITZ! GmbH (formerly AVM). No guarantee for security, use at your own risk.
+FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This project is not affiliated with or endorsed by FRITZ! GmbH (formerly AVM). No guarantee for security, use at your own risk.
 
 ## Changelog
 <!--
@@ -59,6 +65,8 @@ FRITZ! and FRITZ!Box are trademarks of FRITZ! GmbH. This project is not affiliat
 * (Flyor) "Trust certificate again" accepts exactly the certificate from the warning
 * (Flyor) Test connection shows the certificate fingerprint and checks the rights more strictly
 * (Flyor) Readable adapter title
+* (Flyor) Firmware comparison also works with build numbers in the version (lab firmware)
+* (Flyor) README explains what the adapter is for
 
 ### 0.1.1 (2026-10-11)
 * (Flyor) Clearer log messages: network problems and internal errors are no longer mixed up
