@@ -61,6 +61,10 @@ FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This pro
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Flyor) Messages and states are available in all ioBroker languages
+* (Flyor) Summaries and vendor checks run at a random time, so not all systems access the services at once
+
 ### 0.1.2 (2026-10-12)
 * (Flyor) The trusted certificate is bound to the box address and to its key, so a renewed certificate or a new box address no longer raises an alarm
 * (Flyor) "Trust certificate again" accepts exactly the certificate from the warning

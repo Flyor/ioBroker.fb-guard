@@ -2,6 +2,7 @@
  * fb-guard - security monitoring for FRITZ!Box routers via TR-064.
  */
 
+import { randomInt } from 'node:crypto';
 import { networkInterfaces } from 'node:os';
 import * as utils from '@iobroker/adapter-core';
 import { checkExposure } from './lib/checks/exposure';
@@ -9,12 +10,12 @@ import { describeHosts, readHosts } from './lib/checks/devices';
 import { evaluateEvents, readDeviceLog } from './lib/checks/events';
 import { checkFirmware } from './lib/checks/firmware';
 import { checkSettings, hasSettingsRight } from './lib/checks/settings';
-import { L, type CheckContext } from './lib/checks/common';
+import type { CheckContext } from './lib/checks/common';
 import { runDiagnostics } from './lib/diagnostics';
 import { discoverBoxes } from './lib/discovery';
 import { FindingStore, SEVERITY_RANK, type Category, type Diff, type Finding, type Severity } from './lib/findings';
+import { t, locale, initI18n } from './lib/i18n';
 import { learnHomeIpv6, parseIpList } from './lib/ip';
-import type { Lang } from './lib/knowledge/ports';
 import { freshEvents, type SeenEvents } from './lib/logparser';
 import { Notifier, type SendResult } from './lib/notify';
 import { ICON as SEVERITY_ICON, esc, findingsHtml, summaryMessage } from './lib/render';
@@ -25,6 +26,7 @@ const OUTAGE_RUNS = 3;
 /** Format of events.seen. Older formats are replaced by the next read, without alerts. */
 const SEEN_FORMAT = 2;
 const MIN = 60_000;
+const VENDOR_JITTER_MS = 30_000;
 
 /** One row of the confirmation table in the settings. */
 type ConfirmationRow = ioBroker.AdapterConfig['confirmations'][number];
@@ -78,7 +80,6 @@ class FbGuard extends utils.Adapter {
     private initialized = new Set<Category>();
     /** Categories whose stored texts are still in the previous system language. */
     private relabel = new Set<Category>();
-    private lang: Lang = 'en';
     private queue: Promise<void> = Promise.resolve();
     private timers: ioBroker.Interval[] = [];
     /** Set after a login or certificate problem; no further logins until the config changes. */
@@ -110,7 +111,7 @@ class FbGuard extends utils.Adapter {
     private async onReady(): Promise<void> {
         await this.setState('info.connection', false, true);
         const sys = await this.getForeignObjectAsync('system.config');
-        this.lang = sys?.common?.language === 'de' ? 'de' : 'en';
+        initI18n(sys?.common?.language ?? 'en');
 
         this.notifier = new Notifier(this, {
             telegramEnabled: !!this.config.telegramEnabled,
@@ -152,14 +153,14 @@ class FbGuard extends utils.Adapter {
         this.scheduleSummary();
     }
 
-    /** Overview of all open findings, daily or weekly at 9:00 (Mondays). */
+    /** Overview of all open findings, daily or weekly (Mondays) at a random time between 9:00 and 10:00. */
     private scheduleSummary(): void {
         const mode = this.config.summaryInterval;
         if (mode !== 'daily' && mode !== 'weekly') {
             return;
         }
         const next = new Date();
-        next.setHours(9, 0, 0, 0);
+        next.setHours(9, randomInt(60), randomInt(60), 0);
         while (next.getTime() <= Date.now() || (mode === 'weekly' && next.getDay() !== 1)) {
             next.setDate(next.getDate() + 1);
         }
@@ -173,7 +174,7 @@ class FbGuard extends utils.Adapter {
     private async sendSummary(): Promise<SendResult> {
         const open = this.store.open().sort((a, b) => SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity]);
         const acked = this.store.all().filter(f => this.store.isAcked(f.id)).length;
-        const m = summaryMessage(open, { score: this.store.score(), acked }, this.lang);
+        const m = summaryMessage(open, { score: this.store.score(), acked });
         return this.notifier.send(m.severity, m.title, m.text, true);
     }
 
@@ -183,7 +184,7 @@ class FbGuard extends utils.Adapter {
             return { result: res.errors.length ? `${ok}\n${res.errors.join('\n')}` : ok };
         }
         return {
-            error: `${L(this.lang, 'Nicht verschickt', 'Not sent')}: ${res.errors.join('; ') || L(this.lang, 'kein Ziel', 'no target')}`,
+            error: `${t('Not sent')}: ${res.errors.join('; ') || t('no target')}`,
         };
     }
 
@@ -206,12 +207,12 @@ class FbGuard extends utils.Adapter {
             items: any[];
             acked: string[];
             initialized?: Category[];
-            lang?: Lang;
+            lang?: string;
             version?: string;
         }>('findings.json');
         this.store.load(data);
         this.initialized = new Set(Array.isArray(data?.initialized) ? data.initialized : []);
-        if ((data?.lang && data.lang !== this.lang) || (data && data.version !== this.version)) {
+        if ((data?.lang && data.lang !== locale()) || (data && data.version !== this.version)) {
             // texts change with the language or an update, that alone is no reason to notify again
             this.relabel = new Set(this.initialized);
         }
@@ -235,7 +236,7 @@ class FbGuard extends utils.Adapter {
         const dump = {
             ...this.store.dump(),
             initialized: [...this.initialized],
-            lang: this.lang,
+            lang: locale(),
             version: this.version,
         };
         await this.setState('findings.json', JSON.stringify(dump), true);
@@ -249,14 +250,11 @@ class FbGuard extends utils.Adapter {
     private summaryText(): string {
         const open = this.store.open();
         if (!open.length) {
-            return L(this.lang, 'Keine offenen Punkte.', 'Nothing open.');
+            return t('Nothing open.');
         }
         const icon: Record<Severity, string> = { critical: '🔴', warning: '🟠', info: '🔵' };
         return open
-            .map(
-                f =>
-                    `${icon[f.severity]} ${f.title}${f.ackable ? `\n   ${L(this.lang, 'Bestätigen mit ID', 'Confirm with id')}: ${f.id}` : ''}`,
-            )
+            .map(f => `${icon[f.severity]} ${f.title}${f.ackable ? `\n   ${t('Confirm with id')}: ${f.id}` : ''}`)
             .join('\n');
     }
 
@@ -370,12 +368,7 @@ class FbGuard extends utils.Adapter {
         this.failedRuns = 0;
         if (this.outageNotified) {
             this.outageNotified = false;
-            await this.notifier.send(
-                'info',
-                L(this.lang, 'FRITZ!Box wieder erreichbar', 'FRITZ!Box reachable again'),
-                L(this.lang, 'Die Überwachung läuft wieder.', 'Monitoring is running again.'),
-                true,
-            );
+            await this.notifier.send('info', t('FRITZ!Box reachable again'), t('Monitoring is running again.'), true);
         }
     }
 
@@ -394,10 +387,8 @@ class FbGuard extends utils.Adapter {
             );
             await this.notifier.send(
                 'critical',
-                L(this.lang, 'Zertifikat der FRITZ!Box hat sich geändert', 'FRITZ!Box certificate changed'),
-                L(
-                    this.lang,
-                    'Das kann nach einem Reset oder Firmware-Update normal sein, aber auch ein Angriff im Heimnetz. Der Adapter meldet sich nicht mehr an, bis du das neue Zertifikat in den Einstellungen bestätigst.',
+                t('FRITZ!Box certificate changed'),
+                t(
                     'This can be normal after a reset or firmware update, but can also be an attack on your network. The adapter stops logging in until you confirm the new certificate in the settings.',
                 ),
                 true,
@@ -408,10 +399,8 @@ class FbGuard extends utils.Adapter {
             this.log.error(`${err.message}. Polling stopped, please check the settings.`);
             await this.notifier.send(
                 'critical',
-                L(this.lang, 'FRITZ!Box lehnt die Anmeldung ab', 'FRITZ!Box rejects the login'),
-                L(
-                    this.lang,
-                    'Die Überwachung ist angehalten. Wurde das Kennwort oder der Benutzer des Adapters auf der Box geändert oder gelöscht? Warst du das nicht, kann das auch ein Angreifer gewesen sein, der den Wächter abschalten will. Nach dem Korrigieren in den Einstellungen läuft der Adapter wieder an.',
+                t('FRITZ!Box rejects the login'),
+                t(
                     'Monitoring has stopped. Was the password or the user of the adapter changed or deleted on the box? If it was not you, it may also be an attacker trying to switch off the guard. After fixing it in the settings the adapter starts again.',
                 ),
                 true,
@@ -431,11 +420,11 @@ class FbGuard extends utils.Adapter {
                 this.outageNotified = true;
                 await this.notifier.send(
                     'warning',
-                    L(this.lang, 'FRITZ!Box nicht erreichbar', 'FRITZ!Box not reachable'),
-                    L(
-                        this.lang,
-                        `Die letzten ${OUTAGE_RUNS} Prüfungen sind gescheitert, die Box wird gerade nicht überwacht. Letzter Fehler: ${err.message}`,
-                        `The last ${OUTAGE_RUNS} checks failed, the box is not being monitored right now. Last error: ${err.message}`,
+                    t('FRITZ!Box not reachable'),
+                    t(
+                        'The last %s checks failed, the box is not being monitored right now. Last error: %s',
+                        OUTAGE_RUNS,
+                        err.message,
                     ),
                     true,
                 );
@@ -444,7 +433,7 @@ class FbGuard extends utils.Adapter {
     }
 
     private ctx(client: Tr064Client): CheckContext {
-        return { client, lang: this.lang, log: this.log };
+        return { client, log: this.log };
     }
 
     // ---------- checks ----------
@@ -501,19 +490,15 @@ class FbGuard extends utils.Adapter {
             (this.config.alertNewDevices && skipKnownPrivate && fresh.some(e => e.kind === 'new-device')) ||
             fresh.some(e => e.kind === 'wlan-failed');
         const hosts = needHosts ? await readHosts(ctx) : undefined;
-        const alerts = evaluateEvents(
-            fresh,
-            {
-                ownUser: this.config.username,
-                knownIps: parseIpList(this.config.knownIps ?? ''),
-                alertRemoteLogins: this.config.alertRemoteLogins !== false,
-                alertNewDevices: !!this.config.alertNewDevices,
-                skipKnownPrivate,
-                hosts,
-                attackThreshold: Number(this.config.attackThreshold) || 5,
-            },
-            this.lang,
-        );
+        const alerts = evaluateEvents(fresh, {
+            ownUser: this.config.username,
+            knownIps: parseIpList(this.config.knownIps ?? ''),
+            alertRemoteLogins: this.config.alertRemoteLogins !== false,
+            alertNewDevices: !!this.config.alertNewDevices,
+            skipKnownPrivate,
+            hosts,
+            attackThreshold: Number(this.config.attackThreshold) || 5,
+        });
 
         if (!this.eventsInitialized) {
             this.eventsInitialized = true;
@@ -521,7 +506,7 @@ class FbGuard extends utils.Adapter {
                 const worst = alerts.reduce((a, b) => (SEVERITY_RANK[b.severity] > SEVERITY_RANK[a.severity] ? b : a));
                 await this.notifier.send(
                     worst.severity,
-                    L(this.lang, 'Ereignisprotokoll: erste Auswertung', 'Event log: first check'),
+                    t('Event log: first check'),
                     alerts.map(a => `• ${a.title}\n${a.text}`).join('\n\n'),
                 );
             }
@@ -565,6 +550,8 @@ class FbGuard extends utils.Adapter {
         }
         const res = await checkFirmware(this.ctx(client), {
             vendorCheck: !!this.config.vendorFirmwareCheck,
+            // Keeps many installations from hitting the vendor servers at the same moment
+            beforeVendorCheck: () => this.delay(randomInt(VENDOR_JITTER_MS)),
             ageDays: id => {
                 const f = this.store.all().find(x => x.id === id);
                 return f ? Math.floor((Date.now() - f.firstSeen) / (24 * 60 * MIN)) : 0;
@@ -580,12 +567,8 @@ class FbGuard extends utils.Adapter {
             if (this.lastUptime !== undefined && i.uptime < this.lastUptime) {
                 await this.notifier.send(
                     'info',
-                    L(this.lang, 'FRITZ!Box wurde neu gestartet', 'FRITZ!Box was restarted'),
-                    L(
-                        this.lang,
-                        'Dabei wurde auch das Ereignisprotokoll geleert. Warst du das nicht, lohnt ein Blick auf die Einstellungen.',
-                        'This also cleared the event log. If it was not you, have a look at the settings.',
-                    ),
+                    t('FRITZ!Box was restarted'),
+                    t('This also cleared the event log. If it was not you, have a look at the settings.'),
                 );
             }
             this.lastUptime = i.uptime;
@@ -611,18 +594,18 @@ class FbGuard extends utils.Adapter {
     private async notifyDiff(category: Category, diff: Diff, first: boolean): Promise<void> {
         const relevant = [...diff.added, ...diff.changed].filter(f => !this.store.isAcked(f.id));
         const hint = (ackable?: boolean, id?: string): string =>
-            ackable ? `\n\n${L(this.lang, 'Gewollt? Dann bestätigen mit', 'Intended? Confirm with')}: ${id}` : '';
+            ackable ? `\n\n${t('Intended? Confirm with')}: ${id}` : '';
 
         if (first && relevant.length) {
             const worst = relevant.reduce((a, b) => (SEVERITY_RANK[b.severity] > SEVERITY_RANK[a.severity] ? b : a));
             const names: Record<Category, string> = {
-                ports: L(this.lang, 'Offene Ports', 'Open ports'),
-                settings: L(this.lang, 'Einstellungen', 'Settings'),
+                ports: t('Open ports'),
+                settings: t('Settings'),
                 firmware: 'Firmware',
             };
             await this.notifier.send(
                 worst.severity,
-                `${names[category]}: ${L(this.lang, 'erste Prüfung', 'first check')}`,
+                `${names[category]}: ${t('first check')}`,
                 relevant.map(f => `• ${f.title}\n${f.detail}${hint(f.ackable, f.id)}`).join('\n\n'),
             );
             return;
@@ -636,7 +619,7 @@ class FbGuard extends utils.Adapter {
         }
         if (this.config.notifyResolved) {
             for (const f of diff.resolved) {
-                await this.notifier.send(f.severity, `${L(this.lang, 'Erledigt', 'Resolved')}: ${f.title}`, '');
+                await this.notifier.send(f.severity, `${t('Resolved')}: ${f.title}`, '');
             }
         }
     }
@@ -694,17 +677,17 @@ class FbGuard extends utils.Adapter {
         const acked = all.filter(f => f.ackable && isAcked(f.id));
         const unsaved = all.some(f => f.ackable && isAcked(f.id) !== this.store.isAcked(f.id));
         if (!all.length) {
-            return L(
-                this.lang,
-                'Noch keine Ergebnisse. Ist die Verbindung eingerichtet? Der erste Lauf dauert ein paar Sekunden.',
-                'No results yet. Is the connection set up? The first run takes a few seconds.',
-            );
+            return t('No results yet. Is the connection set up? The first run takes a few seconds.');
         }
-        return findingsHtml(open, { score: this.store.score(), acked: acked.length }, this.lang, {
-            acked,
-            unsaved,
-            emptyTable: pending !== undefined && !Object.keys(pending).length && open.some(f => f.ackable),
-        });
+        return findingsHtml(
+            open,
+            { score: this.store.score(), acked: acked.length },
+            {
+                acked,
+                unsaved,
+                emptyTable: pending !== undefined && !Object.keys(pending).length && open.some(f => f.ackable),
+            },
+        );
     }
 
     /** Last diagnostics report for the settings page, with a link to the state. */
@@ -712,10 +695,10 @@ class FbGuard extends utils.Adapter {
         const st = await this.getStateAsync('info.diagnostics');
         const id = `${this.namespace}.info.diagnostics`;
         if (!st?.val) {
-            return L(this.lang, 'Noch keine Diagnose gelaufen.', 'No diagnostics run yet.');
+            return t('No diagnostics run yet.');
         }
-        const when = new Date(st.ts).toLocaleString(this.lang === 'de' ? 'de-DE' : 'en-GB');
-        return `<div>${L(this.lang, 'Stand', 'As of')}: ${esc(when)} · ${L(this.lang, 'Datenpunkt', 'State')} <a style="color:#4fa3ff;text-decoration:underline" href="#tab-objects/${esc(id)}">${esc(id)}</a></div><pre style="max-height:450px;overflow:auto;white-space:pre-wrap;font-size:12px;padding:8px;border:1px solid rgba(128,128,128,.4)">${esc(String(st.val))}</pre>`;
+        const when = new Date(st.ts).toLocaleString(locale());
+        return `<div>${t('As of')}: ${esc(when)} · ${t('State')} <a style="color:#4fa3ff;text-decoration:underline" href="#tab-objects/${esc(id)}">${esc(id)}</a></div><pre style="max-height:450px;overflow:auto;white-space:pre-wrap;font-size:12px;padding:8px;border:1px solid rgba(128,128,128,.4)">${esc(String(st.val))}</pre>`;
     }
 
     /** Rows for the confirmation table in the settings. */
@@ -767,11 +750,7 @@ class FbGuard extends utils.Adapter {
                     const boxes = await discoverBoxes(this);
                     if (!boxes.length) {
                         reply({
-                            error: L(
-                                this.lang,
-                                'Keine FRITZ!Box gefunden. Adresse bitte von Hand eintragen.',
-                                'No FRITZ!Box found. Please enter the address manually.',
-                            ),
+                            error: t('No FRITZ!Box found. Please enter the address manually.'),
                         });
                     } else {
                         const b = boxes.find(x => x.host !== 'fritz.box') ?? boxes[0];
@@ -797,20 +776,11 @@ class FbGuard extends utils.Adapter {
                         minSeverity: 'info',
                     });
                     if (!n.configured) {
-                        reply({ error: L(this.lang, 'Kein Ziel ausgewählt.', 'No target selected.') });
+                        reply({ error: t('No target selected.') });
                         break;
                     }
-                    const res = await n.send(
-                        'info',
-                        'fb-guard',
-                        L(
-                            this.lang,
-                            'Testnachricht: Benachrichtigungen funktionieren.',
-                            'Test message: notifications work.',
-                        ),
-                        true,
-                    );
-                    reply(this.sendReply(res, L(this.lang, 'Testnachricht wurde verschickt.', 'Test message sent.')));
+                    const res = await n.send('info', 'fb-guard', t('Test message: notifications work.'), true);
+                    reply(this.sendReply(res, t('Test message sent.')));
                     break;
                 }
                 case 'diagnose': {
@@ -826,11 +796,7 @@ class FbGuard extends utils.Adapter {
                         return true;
                     });
                     // changing the stamp makes the report view below the button reload
-                    reply(
-                        done
-                            ? { native: { _diagStamp: Date.now() } }
-                            : { error: L(this.lang, 'Keine Verbindung zur Box.', 'Not connected to the box.') },
-                    );
+                    reply(done ? { native: { _diagStamp: Date.now() } } : { error: t('Not connected to the box.') });
                     break;
                 }
                 case 'diagnosticsText': {
@@ -849,10 +815,10 @@ class FbGuard extends utils.Adapter {
                         }
                         const hosts = await readHosts(this.ctx(client));
                         await this.afterCall();
-                        return esc(describeHosts(hosts, this.lang)).replace(/\n/g, '<br>');
+                        return esc(describeHosts(hosts)).replace(/\n/g, '<br>');
                     });
                     if (html === undefined) {
-                        reply({ text: L(this.lang, 'Keine Verbindung zur Box.', 'Not connected to the box.') });
+                        reply({ text: t('Not connected to the box.') });
                         break;
                     }
                     this.devicesCache = { at: Date.now(), html };
@@ -862,31 +828,20 @@ class FbGuard extends utils.Adapter {
                 case 'sendSummary': {
                     if (!this.notifier.configured) {
                         reply({
-                            error: L(
-                                this.lang,
-                                'Keine Benachrichtigung eingerichtet (erst speichern).',
-                                'No notification set up (save first).',
-                            ),
+                            error: t('No notification set up (save first).'),
                         });
                         break;
                     }
                     const rows = Array.isArray(data.confirmations) ? (data.confirmations as ConfirmationRow[]) : [];
                     if (rows.some(r => r?.id && !!r.ok !== this.store.isAcked(r.id))) {
                         reply({
-                            error: L(
-                                this.lang,
-                                'Du hast Haken geändert, aber noch nicht gespeichert. Bitte erst unten auf "Speichern" klicken, sonst enthält die Übersicht noch den alten Stand.',
+                            error: t(
                                 'You changed ticks but did not save yet. Please click "Save" first, otherwise the overview still shows the old state.',
                             ),
                         });
                         break;
                     }
-                    reply(
-                        this.sendReply(
-                            await this.sendSummary(),
-                            L(this.lang, 'Übersicht wurde verschickt.', 'Overview sent.'),
-                        ),
-                    );
+                    reply(this.sendReply(await this.sendSummary(), t('Overview sent.')));
                     break;
                 }
                 case 'findingsText': {
@@ -899,11 +854,7 @@ class FbGuard extends utils.Adapter {
                     const rows = this.confirmationRows();
                     if (!rows.length) {
                         reply({
-                            error: L(
-                                this.lang,
-                                'Keine bestätigbaren Funde. Läuft der Adapter?',
-                                'No findings to confirm. Is the adapter running?',
-                            ),
+                            error: t('No findings to confirm. Is the adapter running?'),
                         });
                         break;
                     }
@@ -921,16 +872,8 @@ class FbGuard extends utils.Adapter {
                     this.client = undefined;
                     reply({
                         result: pending
-                            ? L(
-                                  this.lang,
-                                  'Das neue Zertifikat aus der Warnung ist jetzt vertraut.',
-                                  'The new certificate from the alert is trusted now.',
-                              )
-                            : L(
-                                  this.lang,
-                                  'Das aktuelle Zertifikat wird bei der nächsten Verbindung übernommen.',
-                                  'The current certificate will be trusted on the next connection.',
-                              ),
+                            ? t('The new certificate from the alert is trusted now.')
+                            : t('The current certificate will be trusted on the next connection.'),
                     });
                     break;
                 }
@@ -946,11 +889,7 @@ class FbGuard extends utils.Adapter {
         const host = String(data.host ?? '').trim();
         if (!host || !data.username || !data.password) {
             return {
-                error: L(
-                    this.lang,
-                    'Bitte Adresse, Benutzer und Kennwort ausfüllen.',
-                    'Please fill in address, user and password.',
-                ),
+                error: t('Please fill in address, user and password.'),
             };
         }
         const pin = await this.getStateAsync('info.certFingerprint');
@@ -970,40 +909,29 @@ class FbGuard extends utils.Adapter {
             const hasSettings = hasSettingsRight(rights);
             const lines = [
                 `${desc.modelName}, FRITZ!OS ${desc.firmware}`,
-                L(this.lang, 'Anmeldung erfolgreich.', 'Login successful.'),
+                t('Login successful.'),
                 data.useTls !== false
-                    ? L(
-                          this.lang,
-                          `Verbindung verschlüsselt (TLS), Zertifikat SHA-256: ${client.certificateFingerprint}`,
-                          `Connection encrypted (TLS), certificate SHA-256: ${client.certificateFingerprint}`,
-                      )
-                    : L(this.lang, 'Achtung: Verbindung unverschlüsselt.', 'Warning: connection not encrypted.'),
+                    ? t('Connection encrypted (TLS), certificate SHA-256: %s', client.certificateFingerprint)
+                    : t('Warning: connection not encrypted.'),
                 hasSettings
-                    ? L(this.lang, 'Rechte: ausreichend.', 'Rights: sufficient.')
-                    : L(
-                          this.lang,
-                          'Rechte: bitte dem Benutzer das Recht "FRITZ!Box Einstellungen" geben.',
-                          'Rights: please grant the user the "FRITZ!Box settings" right.',
-                      ),
+                    ? t('Rights: sufficient.')
+                    : t('Rights: please grant the user the "FRITZ!Box settings" right.'),
             ];
             return { result: lines.join('\n') };
         } catch (e) {
             const err = e as Error;
             if (err instanceof AuthError) {
                 return {
-                    error: L(
-                        this.lang,
-                        'Anmeldung abgelehnt: Benutzer oder Kennwort falsch. Achtung, die Box sperrt nach mehreren Fehlversuchen kurz.',
+                    error: t(
                         'Login rejected: wrong user or password. Note that the box blocks briefly after several failures.',
                     ),
                 };
             }
             if (err instanceof CertificateMismatchError) {
                 return {
-                    error: L(
-                        this.lang,
-                        `Das Zertifikat der Box hat sich geändert (neu, SHA-256: ${err.fingerprint}). Bitte unten "Zertifikat neu übernehmen" nutzen, wenn das erwartet war.`,
-                        `The certificate changed (new, SHA-256: ${err.fingerprint}). Use "Trust certificate again" below if this was expected.`,
+                    error: t(
+                        'The certificate changed (new, SHA-256: %s). Use "Trust certificate again" below if this was expected.',
+                        err.fingerprint,
                     ),
                 };
             }
@@ -1016,8 +944,8 @@ class FbGuard extends utils.Adapter {
     private onUnload(callback: () => void): void {
         try {
             this.stopping = true;
-            for (const t of this.timers) {
-                this.clearInterval(t);
+            for (const timer of this.timers) {
+                this.clearInterval(timer);
             }
             if (this.summaryTimer) {
                 this.clearTimeout(this.summaryTimer);

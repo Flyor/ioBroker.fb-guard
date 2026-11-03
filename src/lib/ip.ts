@@ -1,4 +1,5 @@
 import { isIP } from 'node:net';
+import { t } from './i18n';
 
 export type IpScope = 'private' | 'loopback' | 'linklocal' | 'cgnat' | 'public' | 'invalid';
 
@@ -119,16 +120,8 @@ export function ipInList(ip: string, list: string[]): boolean {
     });
 }
 
-export function describeScope(scope: IpScope, lang: 'de' | 'en'): string {
-    const de: Record<IpScope, string> = {
-        private: 'aus deinem Heimnetz',
-        loopback: 'vom Gerät selbst',
-        linklocal: 'aus dem lokalen Netzsegment',
-        cgnat: 'aus einem Provider-Netz (CGNAT)',
-        public: 'aus dem Internet',
-        invalid: 'unbekannter Herkunft',
-    };
-    const en: Record<IpScope, string> = {
+export function describeScope(scope: IpScope): string {
+    const text: Record<IpScope, string> = {
         private: 'from your home network',
         loopback: 'from the device itself',
         linklocal: 'from the local link',
@@ -136,5 +129,5 @@ export function describeScope(scope: IpScope, lang: 'de' | 'en'): string {
         public: 'from the internet',
         invalid: 'of unknown origin',
     };
-    return (lang === 'de' ? de : en)[scope];
+    return t(text[scope]);
 }

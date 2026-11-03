@@ -1,5 +1,7 @@
 /// <reference types="mocha" />
 import { strict as assert } from 'node:assert';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { deviceFromMessage, isKnownWithNewAddress, isRandomMac, parseHostListXml } from './checks/devices';
 import { evaluateEvents } from './checks/events';
 import {
@@ -16,10 +18,58 @@ import {
 import { parseUserList } from './checks/settings';
 import { maskLogLine, maskText, redact } from './diagnostics';
 import { FindingStore, type Finding } from './findings';
+import { initI18n, locale, t } from './i18n';
 import { classifyIp, ipInList, parseIpList } from './ip';
 import { explainByName, explainPort } from './knowledge/ports';
 import { findingsHtml, summaryMessage } from './render';
 import { classify, freshEvents, parseDeviceLog, parseDeviceLogXml } from './logparser';
+
+before(() => initI18n('en'));
+
+describe('i18n', () => {
+    const dir = join(__dirname, '..', '..', 'admin', 'i18n');
+    const load = (file: string): Record<string, string> => JSON.parse(readFileSync(join(dir, file), 'utf8'));
+    const sources = (d: string): string[] =>
+        readdirSync(d, { withFileTypes: true }).flatMap(e =>
+            e.isDirectory() ? sources(join(d, e.name)) : e.name.endsWith('.ts') ? [join(d, e.name)] : [],
+        );
+
+    afterEach(() => initI18n('en'));
+
+    it('has every text in every language with the same placeholders', () => {
+        const en = load('en.json');
+        for (const file of readdirSync(dir)) {
+            const words = load(file);
+            assert.deepEqual(Object.keys(words).sort(), Object.keys(en).sort(), file);
+            for (const key of Object.keys(en)) {
+                assert.equal(words[key]?.split('%s').length, key.split('%s').length, `${file}: ${key}`);
+            }
+        }
+    });
+
+    it('has a translation for every literal key in the code', () => {
+        const en = load('en.json');
+        for (const file of sources(join(__dirname, '..')).filter(f => !f.endsWith('.test.ts'))) {
+            for (const m of readFileSync(file, 'utf8').matchAll(/\bt\(\s*'((?:[^'\\]|\\.)*)'/g)) {
+                const key = (m[1] ?? '').replace(/\\(.)/g, (_, c: string) => (c === 'n' ? '\n' : c));
+                assert.ok(key in en, `${file}: ${key}`);
+            }
+        }
+    });
+
+    it('follows the system language', () => {
+        initI18n('de');
+        assert.equal(t('Nothing open.'), 'Keine offenen Punkte.');
+        assert.equal(locale(), 'de');
+        initI18n('zh-cn');
+        assert.notEqual(t('Nothing open.'), 'Nothing open.');
+        assert.equal(locale(), 'zh-CN');
+    });
+
+    it('takes box data literally', () => {
+        assert.equal(t('WLAN "%s" is open', "a$&b$'c"), `WLAN "a$&b$'c" is open`);
+    });
+});
 
 describe('ip', () => {
     it('classifies addresses', () => {
@@ -118,17 +168,13 @@ describe('logparser', () => {
     });
 
     it('turns failed logins into one alert per address', () => {
-        const alerts = evaluateEvents(
-            parseDeviceLog(log),
-            {
-                ownUser: 'fb-guard',
-                knownIps: [],
-                alertRemoteLogins: true,
-                alertNewDevices: true,
-                attackThreshold: 2,
-            },
-            'en',
-        );
+        const alerts = evaluateEvents(parseDeviceLog(log), {
+            ownUser: 'fb-guard',
+            knownIps: [],
+            alertRemoteLogins: true,
+            alertNewDevices: true,
+            attackThreshold: 2,
+        });
         const failed = alerts.filter(a => /failed/i.test(a.title));
         assert.equal(failed.length, 1);
         assert.equal(failed[0].severity, 'critical');
@@ -148,8 +194,8 @@ describe('logparser', () => {
             alertNewDevices: false,
             attackThreshold: 5,
         };
-        assert.equal(evaluateEvents(ev, opts, 'de').length, 1);
-        assert.equal(evaluateEvents(ev, { ...opts, knownIps: ['198.51.100.0/24'] }, 'de').length, 0);
+        assert.equal(evaluateEvents(ev, opts).length, 1);
+        assert.equal(evaluateEvents(ev, { ...opts, knownIps: ['198.51.100.0/24'] }).length, 0);
     });
 
     it('groups failed Wi-Fi logins per device', () => {
@@ -166,7 +212,7 @@ describe('logparser', () => {
             attackThreshold: 2,
             hosts: [{ mac: '00:11:22:33:44:55', active: false }],
         };
-        const alerts = evaluateEvents(events, opts, 'en');
+        const alerts = evaluateEvents(events, opts);
         assert.equal(alerts.length, 2);
         const known = alerts.find(a => a.text.includes('00:11:22:33:44:55'));
         const other = alerts.find(a => a.text.includes('3a:00:00:00:00:01'));
@@ -201,11 +247,13 @@ describe('logparser', () => {
         );
         assert.equal(classify('Freigabe für Port 51820 auf 192.168.178.50 (nas) hinzugefügt.').kind, 'port-added');
 
-        const alerts = evaluateEvents(
-            ev,
-            { ownUser: 'x', knownIps: [], alertRemoteLogins: true, alertNewDevices: false, attackThreshold: 3 },
-            'en',
-        );
+        const alerts = evaluateEvents(ev, {
+            ownUser: 'x',
+            knownIps: [],
+            alertRemoteLogins: true,
+            alertNewDevices: false,
+            attackThreshold: 3,
+        });
         const byIp = (ip: string): (typeof alerts)[number] | undefined => alerts.find(a => a.text.includes(ip));
         assert.equal(byIp('192.168.178.30')?.severity, 'critical');
         assert.match(byIp('192.168.178.30')?.text ?? '', /Count: 3/);
@@ -348,24 +396,23 @@ describe('firmware', () => {
     it('tells when a model gets no more updates', () => {
         const now = Date.parse('2026-10-12');
         const ok = { endOfSale: false, endOfUpdates: false, endOfSupport: false };
-        assert.deepEqual(lifecycleFindings('FRITZ!Box 7590 AX', ok, '2026-03-26', 'en', now), []);
-        const sold = lifecycleFindings('FRITZ!Box 7590', { ...ok, endOfSale: true }, '2026-03-26', 'en', now);
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7590 AX', ok, '2026-03-26', now), []);
+        const sold = lifecycleFindings('FRITZ!Box 7590', { ...ok, endOfSale: true }, '2026-03-26', now);
         assert.equal(sold[0]?.id, 'firmware:end-of-sale');
         assert.equal(sold[0]?.severity, 'info');
         const eol = lifecycleFindings(
             'FRITZ!Box 7490',
             { ...ok, endOfSale: true, endOfUpdates: true },
             '2026-01-08',
-            'en',
             now,
         );
         assert.equal(eol.length, 1);
         assert.equal(eol[0]?.id, 'firmware:eol');
         assert.equal(eol[0]?.severity, 'warning');
         // not on the list: only the age of the newest firmware counts
-        assert.equal(lifecycleFindings('FRITZ!Box 7390', undefined, '2023-09-04', 'en', now)[0]?.id, 'firmware:stale');
-        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, '2026-01-01', 'en', now), []);
-        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, undefined, 'en', now), []);
+        assert.equal(lifecycleFindings('FRITZ!Box 7390', undefined, '2023-09-04', now)[0]?.id, 'firmware:stale');
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, '2026-01-01', now), []);
+        assert.deepEqual(lifecycleFindings('FRITZ!Box 7399', undefined, undefined, now), []);
     });
 });
 
@@ -379,10 +426,10 @@ describe('settings', () => {
 
 describe('ports', () => {
     it('explains known ports', () => {
-        assert.ok(explainPort('TCP', 8089, 'de')?.text);
-        assert.equal(explainPort('UDP', 51820, 'en')?.risk, 'low');
-        assert.equal(explainPort('TCP', 3389, 'en')?.risk, 'high');
-        assert.equal(explainPort('TCP', 12345, 'en'), undefined);
+        assert.ok(explainPort('TCP', 8089)?.text);
+        assert.equal(explainPort('UDP', 51820)?.risk, 'low');
+        assert.equal(explainPort('TCP', 3389)?.risk, 'high');
+        assert.equal(explainPort('TCP', 12345), undefined);
     });
 });
 
@@ -468,18 +515,18 @@ describe('devices', () => {
 
         const [e] = parseDeviceLog(`10.10.26 09:00:00 ${msg}`);
         const opts = { ownUser: 'x', knownIps: [], alertRemoteLogins: true, alertNewDevices: true, attackThreshold: 5 };
-        assert.equal(evaluateEvents([e], { ...opts, skipKnownPrivate: true, hosts }, 'en').length, 0);
-        const [a] = evaluateEvents([e], opts, 'en');
+        assert.equal(evaluateEvents([e], { ...opts, skipKnownPrivate: true, hosts }).length, 0);
+        const [a] = evaluateEvents([e], opts);
         assert.match(a.text, /private/);
     });
 });
 
 describe('render', () => {
     it('recognises services by forwarding name', () => {
-        assert.equal(explainByName('UDP', 'WireGuard', 'en')?.risk, 'low');
-        assert.equal(explainByName('TCP', 'WireGuard', 'en'), undefined);
-        assert.equal(explainByName('TCP', 'Remote Desktop', 'en')?.risk, 'high');
-        assert.equal(explainByName('UDP', 'something', 'en'), undefined);
+        assert.equal(explainByName('UDP', 'WireGuard')?.risk, 'low');
+        assert.equal(explainByName('TCP', 'WireGuard'), undefined);
+        assert.equal(explainByName('TCP', 'Remote Desktop')?.risk, 'high');
+        assert.equal(explainByName('UDP', 'something'), undefined);
     });
 
     it('escapes everything that comes from the box', () => {
@@ -495,7 +542,6 @@ describe('render', () => {
                 },
             ],
             { score: 90, acked: 0 },
-            'en',
         );
         assert.ok(!html.includes('<img'));
         assert.ok(!html.includes('<script'));
@@ -513,11 +559,11 @@ describe('render', () => {
             title: `T ${id}`,
             detail: '',
         });
-        const m = summaryMessage([f('a', 'info'), f('b', 'warning'), f('c', 'info')], { score: 90, acked: 2 }, 'en');
+        const m = summaryMessage([f('a', 'info'), f('b', 'warning'), f('c', 'info')], { score: 90, acked: 2 });
         assert.equal(m.severity, 'warning');
         assert.ok(m.text.indexOf('Warnings (1)') < m.text.indexOf('Notes (2)'));
         assert.ok(m.text.includes('• T c'));
-        assert.equal(summaryMessage([], { score: 100, acked: 0 }, 'en').severity, 'info');
+        assert.equal(summaryMessage([], { score: 100, acked: 0 }).severity, 'info');
     });
 });
 

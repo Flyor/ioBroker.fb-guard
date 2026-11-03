@@ -1,8 +1,8 @@
 import { describeScope, classifyIp, ipInList } from '../ip';
-import type { Lang } from '../knowledge/ports';
+import { locale, t } from '../i18n';
 import type { LogEvent } from '../logparser';
 import { parseDeviceLog, parseDeviceLogXml } from '../logparser';
-import { type CheckContext, L, tryCall } from './common';
+import { type CheckContext, tryCall } from './common';
 import { deviceFromMessage, isKnownWithNewAddress, isRandomMac, type Host } from './devices';
 
 export interface EventAlert {
@@ -45,21 +45,11 @@ export async function readDeviceLog(ctx: CheckContext): Promise<LogEvent[]> {
     return parseDeviceLog(r?.NewDeviceLog ?? '');
 }
 
-function fmtTime(e: LogEvent, lang: Lang): string {
-    return e.time ? e.time.toLocaleString(lang === 'de' ? 'de-DE' : 'en-GB') : e.rawTime || '?';
+function fmtTime(e: LogEvent): string {
+    return e.time ? e.time.toLocaleString(locale()) : e.rawTime || '?';
 }
 
-const channelName = (c: string | undefined, lang: Lang): string => {
-    const de: Record<string, string> = {
-        ui: 'Benutzeroberfläche',
-        remote: 'Fernzugriff übers Internet',
-        tr064: 'TR-064 (Programme/Apps)',
-        app: 'App',
-        ftp: 'FTP',
-        smb: 'Speicher (SMB)',
-        vpn: 'VPN',
-        unknown: 'unbekannt',
-    };
+const channelName = (c: string | undefined): string => {
     const en: Record<string, string> = {
         ui: 'user interface',
         remote: 'remote access via internet',
@@ -70,13 +60,14 @@ const channelName = (c: string | undefined, lang: Lang): string => {
         vpn: 'VPN',
         unknown: 'unknown',
     };
-    return (lang === 'de' ? de : en)[c ?? 'unknown'] ?? c ?? '';
+    const name = en[c ?? 'unknown'];
+    return name ? t(name) : (c ?? '');
 };
 
 /**
  * Turns new log events into alerts. Failed logins are grouped per source address.
  */
-export function evaluateEvents(events: LogEvent[], opts: EventOptions, lang: Lang): EventAlert[] {
+export function evaluateEvents(events: LogEvent[], opts: EventOptions): EventAlert[] {
     const alerts: EventAlert[] = [];
     const failed = new Map<string, LogEvent[]>();
     const wlan = new Map<string, LogEvent[]>();
@@ -95,33 +86,36 @@ export function evaluateEvents(events: LogEvent[], opts: EventOptions, lang: Lan
             if (classifyIp(e.ip) === 'public' && !ipInList(e.ip, opts.knownIps)) {
                 alerts.push({
                     severity: 'warning',
-                    title: L(lang, 'Anmeldung aus dem Internet', 'Login from the internet'),
-                    text: L(
-                        lang,
-                        `${fmtTime(e, lang)}: ${e.user ? `Benutzer "${e.user}"` : 'Ein Benutzer'} hat sich von ${e.ip} angemeldet (${channelName(e.channel, lang)}). Warst du das nicht, sofort das Kennwort ändern.\n\n${e.message}`,
-                        `${fmtTime(e, lang)}: ${e.user ? `user "${e.user}"` : 'a user'} logged in from ${e.ip} (${channelName(e.channel, lang)}). If this was not you, change the password right away.\n\n${e.message}`,
-                    ),
+                    title: t('Login from the internet'),
+                    text: `${
+                        e.user
+                            ? t(
+                                  '%s: user "%s" logged in from %s (%s). If this was not you, change the password right away.',
+                                  fmtTime(e),
+                                  e.user,
+                                  e.ip,
+                                  channelName(e.channel),
+                              )
+                            : t(
+                                  '%s: a user logged in from %s (%s). If this was not you, change the password right away.',
+                                  fmtTime(e),
+                                  e.ip,
+                                  channelName(e.channel),
+                              )
+                    }\n\n${e.message}`,
                 });
             }
         } else if (e.kind === 'port-added') {
             alerts.push({
                 severity: 'warning',
-                title: L(lang, 'Neue Portfreigabe', 'New port forwarding'),
-                text: L(
-                    lang,
-                    `${fmtTime(e, lang)}: ${e.message}
-
-War das gewollt? Wenn nicht, die Freigabe in der Box löschen.`,
-                    `${fmtTime(e, lang)}: ${e.message}
-
-Was this intended? If not, delete the forwarding in the box.`,
-                ),
+                title: t('New port forwarding'),
+                text: `${fmtTime(e)}: ${e.message}\n\n${t('Was this intended? If not, delete the forwarding in the box.')}`,
             });
         } else if (e.kind === 'settings-changed') {
             alerts.push({
                 severity: 'info',
-                title: L(lang, 'Einstellungen geändert', 'Settings changed'),
-                text: `${fmtTime(e, lang)}: ${e.message}`,
+                title: t('Settings changed'),
+                text: `${fmtTime(e)}: ${e.message}`,
             });
         } else if (e.kind === 'new-device' && opts.alertNewDevices) {
             const d = deviceFromMessage(e.message);
@@ -129,16 +123,14 @@ Was this intended? If not, delete the forwarding in the box.`,
                 continue;
             }
             const hint = isRandomMac(d.mac)
-                ? L(
-                      lang,
-                      '\n\nDas Gerät nutzt eine private (wechselnde) Adresse, z. B. iPhone, Android oder Windows. Es kann ein bekanntes Gerät mit neuer Adresse sein.',
-                      '\n\nThe device uses a private (changing) address, e.g. iPhone, Android or Windows. It may be a known device with a new address.',
-                  )
+                ? `\n\n${t(
+                      'The device uses a private (changing) address, e.g. iPhone, Android or Windows. It may be a known device with a new address.',
+                  )}`
                 : '';
             alerts.push({
                 severity: 'info',
-                title: L(lang, 'Neues Gerät im Netz', 'New device on the network'),
-                text: `${fmtTime(e, lang)}: ${e.message}${hint}`,
+                title: t('New device on the network'),
+                text: `${fmtTime(e)}: ${e.message}${hint}`,
             });
         }
     }
@@ -146,8 +138,8 @@ Was this intended? If not, delete the forwarding in the box.`,
     for (const [ip, list] of failed) {
         const scope = ip === '?' ? 'invalid' : classifyIp(ip);
         const users = [...new Set(list.map(e => e.user).filter(Boolean))];
-        const channels = [...new Set(list.map(e => channelName(e.channel, lang)))];
-        const times = list.map(e => e.time?.getTime()).filter((t): t is number => t !== undefined);
+        const channels = [...new Set(list.map(e => channelName(e.channel)))];
+        const times = list.map(e => e.time?.getTime()).filter((x): x is number => x !== undefined);
         const first = list.reduce((a, b) => ((a.time?.getTime() ?? 0) < (b.time?.getTime() ?? 0) ? a : b));
         const last = list.reduce((a, b) => ((a.time?.getTime() ?? 0) > (b.time?.getTime() ?? 0) ? a : b));
         const count = list.reduce((n, e) => n + e.count, 0);
@@ -155,50 +147,40 @@ Was this intended? If not, delete the forwarding in the box.`,
         // 503 = old browser tab with an expired session, not a password guess
         const staleOnly = list.every(e => e.eventId === 503);
         const severity = scope === 'public' || attack ? 'critical' : staleOnly ? 'info' : 'warning';
-        const span = times.length > 1 ? `${fmtTime(first, lang)} – ${fmtTime(last, lang)}` : fmtTime(last, lang);
+        const span = times.length > 1 ? `${fmtTime(first)} – ${fmtTime(last)}` : fmtTime(last);
 
         const lines = [
-            L(lang, `Anzahl: ${count}`, `Count: ${count}`),
-            L(lang, `Zeit: ${span}`, `Time: ${span}`),
-            L(lang, `Von: ${ip} (${describeScope(scope, 'de')})`, `From: ${ip} (${describeScope(scope, 'en')})`),
-            L(lang, `Zugang: ${channels.join(', ')}`, `Access: ${channels.join(', ')}`),
+            t('Count: %s', count),
+            t('Time: %s', span),
+            t('From: %s (%s)', ip, describeScope(scope)),
+            t('Access: %s', channels.join(', ')),
         ];
         if (users.length) {
-            lines.push(L(lang, `Benutzername: ${users.join(', ')}`, `User name: ${users.join(', ')}`));
+            lines.push(t('User name: %s', users.join(', ')));
         }
         if (last.reason) {
-            lines.push(L(lang, `Grund: ${last.reason}`, `Reason: ${last.reason}`));
+            lines.push(t('Reason: %s', last.reason));
         }
         lines.push(
             '',
             scope === 'public'
-                ? L(
-                      lang,
-                      'Jemand aus dem Internet probiert Kennwörter aus. Die Box bremst das aus. Wenn du den Fernzugriff nicht brauchst, schalte ihn ab.',
+                ? t(
                       'Someone on the internet is guessing passwords. The box slows this down. If you do not need remote access, turn it off.',
                   )
                 : staleOnly
-                  ? L(
-                        lang,
-                        'Meist ein alter Browser-Tab der Box-Oberfläche mit abgelaufener Sitzung. Tab schließen oder neu laden.',
-                        'Usually an old browser tab of the box interface with an expired session. Close or reload it.',
-                    )
-                  : L(
-                        lang,
-                        'Der Versuch kam aus deinem Heimnetz. Meist ein vertipptes Kennwort oder ein Gerät/Programm mit altem Kennwort.',
+                  ? t('Usually an old browser tab of the box interface with an expired session. Close or reload it.')
+                  : t(
                         'The attempt came from your home network. Usually a typo or a device/program with an old password.',
                     ),
         );
         alerts.push({
             severity,
-            title: attack
-                ? L(lang, 'Mehrere fehlgeschlagene Anmeldungen', 'Multiple failed logins')
-                : L(lang, 'Fehlgeschlagene Anmeldung', 'Failed login'),
+            title: attack ? t('Multiple failed logins') : t('Failed login'),
             text: lines.join('\n'),
         });
     }
     for (const [mac, list] of wlan) {
-        alerts.push(wlanAlert(mac, list, opts, lang));
+        alerts.push(wlanAlert(mac, list, opts));
     }
     return alerts;
 }
@@ -207,45 +189,31 @@ Was this intended? If not, delete the forwarding in the box.`,
  * Failed Wi-Fi logins of one device. A known device usually has an old key stored,
  * an unknown one nearby may be guessing the key.
  */
-function wlanAlert(mac: string, list: LogEvent[], opts: EventOptions, lang: Lang): EventAlert {
+function wlanAlert(mac: string, list: LogEvent[], opts: EventOptions): EventAlert {
     const count = list.reduce((n, e) => n + e.count, 0);
     const known = mac !== '?' && !!opts.hosts?.some(h => h.mac.toLowerCase() === mac);
     const attack = count >= opts.attackThreshold;
     const severity = attack ? (known ? 'warning' : 'critical') : known ? 'info' : 'warning';
     const last = list.reduce((a, b) => ((a.time?.getTime() ?? 0) > (b.time?.getTime() ?? 0) ? a : b));
-    const lines = [
-        L(lang, `Anzahl: ${count}`, `Count: ${count}`),
-        L(lang, `Zuletzt: ${fmtTime(last, lang)}`, `Last: ${fmtTime(last, lang)}`),
-        L(lang, `Gerät (MAC): ${mac}`, `Device (MAC): ${mac}`),
-    ];
+    const lines = [t('Count: %s', count), t('Last: %s', fmtTime(last)), t('Device (MAC): %s', mac)];
     if (last.reason) {
-        lines.push(L(lang, `Grund: ${last.reason}`, `Reason: ${last.reason}`));
+        lines.push(t('Reason: %s', last.reason));
     }
     lines.push(
         '',
         known
-            ? L(
-                  lang,
-                  'Das Gerät ist der Box bekannt. Meist ist dort noch ein altes WLAN-Kennwort gespeichert.',
-                  'The box knows this device. Usually it still has an old Wi-Fi password stored.',
-              )
+            ? t('The box knows this device. Usually it still has an old Wi-Fi password stored.')
             : isRandomMac(mac)
-              ? L(
-                    lang,
-                    'Unbekanntes Gerät mit privater (wechselnder) Adresse. Das kann ein Gast sein, der sich vertippt hat, oder jemand in Reichweite, der den WLAN-Schlüssel rät. Bei vielen Versuchen den Schlüssel prüfen und WPS ausschalten.',
+              ? t(
                     'Unknown device with a private (changing) address. It may be a guest with a typo, or someone in range guessing the Wi-Fi key. On many attempts check the key and turn off WPS.',
                 )
-              : L(
-                    lang,
-                    'Unbekanntes Gerät. Das kann ein Gast sein, der sich vertippt hat, oder jemand in Reichweite, der den WLAN-Schlüssel rät. Bei vielen Versuchen den Schlüssel prüfen und WPS ausschalten.',
+              : t(
                     'Unknown device. It may be a guest with a typo, or someone in range guessing the Wi-Fi key. On many attempts check the key and turn off WPS.',
                 ),
     );
     return {
         severity,
-        title: attack
-            ? L(lang, 'Mehrere fehlgeschlagene WLAN-Anmeldungen', 'Multiple failed Wi-Fi logins')
-            : L(lang, 'Fehlgeschlagene WLAN-Anmeldung', 'Failed Wi-Fi login'),
+        title: attack ? t('Multiple failed Wi-Fi logins') : t('Failed Wi-Fi login'),
         text: lines.join('\n'),
     };
 }

@@ -130,7 +130,6 @@ describe('stored findings', () => {
 describe('tryCall', () => {
     const ctx = (err: Error): CheckContext => ({
         client: { has: () => true, call: () => Promise.reject(err) } as unknown as Tr064Client,
-        lang: 'en',
         log: { debug: () => undefined } as unknown as ioBroker.Logger,
     });
 

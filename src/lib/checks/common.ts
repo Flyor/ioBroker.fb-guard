@@ -1,18 +1,9 @@
 import type { Tr064Client } from '../tr064/client';
 import { Tr064Fault } from '../tr064/soap';
-import type { Lang } from '../knowledge/ports';
 
 export interface CheckContext {
     client: Tr064Client;
-    lang: Lang;
     log: ioBroker.Logger;
-}
-
-/**
- * Picks the text for the current language.
- */
-export function L(lang: Lang, de: string, en: string): string {
-    return lang === 'de' ? de : en;
 }
 
 /**

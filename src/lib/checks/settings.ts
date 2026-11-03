@@ -1,6 +1,7 @@
 import type { Finding } from '../findings';
 import { parseXml } from '../tr064/soap';
-import { type CheckContext, L, isOn, tryCall } from './common';
+import { t } from '../i18n';
+import { type CheckContext, isOn, tryCall } from './common';
 
 export function parseUserList(xml: string): string[] {
     if (!xml) {
@@ -42,7 +43,6 @@ export async function checkSettings(
     knownUsers: string[] | undefined,
     ownUser: string,
 ): Promise<SettingsResult> {
-    const { lang } = ctx;
     const findings: Finding[] = [];
 
     const sec = await tryCall(ctx, 'LANConfigSecurity:1', 'GetInfo');
@@ -51,17 +51,9 @@ export async function checkSettings(
             id: 'login:default-password',
             category: 'settings',
             severity: 'critical',
-            title: L(lang, 'Werkseitiges Kennwort ist aktiv', 'Factory password is active'),
-            detail: L(
-                lang,
-                'Die Box nutzt noch das Kennwort vom Aufkleber.',
-                'The box still uses the password printed on the label.',
-            ),
-            advice: L(
-                lang,
-                'Unter System > FRITZ!Box-Benutzer ein eigenes, langes Kennwort setzen.',
-                'Set your own long password under System > FRITZ!Box Users.',
-            ),
+            title: t('Factory password is active'),
+            detail: t('The box still uses the password printed on the label.'),
+            advice: t('Set your own long password under System > FRITZ!Box Users.'),
         });
     }
 
@@ -71,17 +63,9 @@ export async function checkSettings(
             id: 'login:anonymous',
             category: 'settings',
             severity: 'critical',
-            title: L(lang, 'Anmeldung ohne Kennwort möglich', 'Login without password possible'),
-            detail: L(
-                lang,
-                'Jeder im Heimnetz kann die Box ohne Kennwort bedienen.',
-                'Anyone on the home network can use the box without a password.',
-            ),
-            advice: L(
-                lang,
-                'Unter System > FRITZ!Box-Benutzer > Anmeldung im Heimnetz eine Anmeldung mit Kennwort erzwingen.',
-                'Require a password under System > FRITZ!Box Users > Login.',
-            ),
+            title: t('Login without password possible'),
+            detail: t('Anyone on the home network can use the box without a password.'),
+            advice: t('Require a password under System > FRITZ!Box Users > Login.'),
         });
     }
 
@@ -91,17 +75,11 @@ export async function checkSettings(
             id: 'login:2fa-off',
             category: 'settings',
             severity: 'warning',
-            title: L(lang, 'Zweiter Faktor ist aus', 'Two-factor confirmation is off'),
-            detail: L(
-                lang,
-                'Wichtige Änderungen an der Box werden nicht zusätzlich bestätigt (Taste an der Box, Telefon oder Authenticator-App).',
+            title: t('Two-factor confirmation is off'),
+            detail: t(
                 'Important changes are not confirmed by a second factor (button on the box, phone or authenticator app).',
             ),
-            advice: L(
-                lang,
-                'Unter System > FRITZ!Box-Benutzer > Anmeldung im Heimnetz die Zwei-Faktor-Authentifizierung einschalten.',
-                'Enable two-factor authentication under System > FRITZ!Box Users.',
-            ),
+            advice: t('Enable two-factor authentication under System > FRITZ!Box Users.'),
             ackable: true,
         });
     }
@@ -117,28 +95,12 @@ export async function checkSettings(
             id: `user:${u}`,
             category: 'settings',
             severity: isNew ? 'critical' : 'info',
-            title: isNew
-                ? L(lang, `Neuer FRITZ!Box-Benutzer "${u}"`, `New FRITZ!Box user "${u}"`)
-                : L(lang, `FRITZ!Box-Benutzer "${u}"`, `FRITZ!Box user "${u}"`),
+            title: isNew ? t('New FRITZ!Box user "%s"', u) : t('FRITZ!Box user "%s"', u),
             detail: isNew
-                ? L(
-                      lang,
-                      'Dieser Benutzer ist neu angelegt worden. Wenn du das nicht warst, ist das ein Alarmzeichen.',
-                      'This user was just created. If it was not you, this is a red flag.',
-                  )
-                : L(
-                      lang,
-                      'Hat Zugang zur Box. Unbenutzte Benutzer sind ein unnötiges Risiko.',
-                      'Has access to the box. Unused accounts are an unnecessary risk.',
-                  ),
-            advice: L(
-                lang,
-                'Wenn du den Benutzer nicht brauchst: unter System > FRITZ!Box-Benutzer löschen. Sonst bestätigen.',
-                'If you do not need it, delete it under System > FRITZ!Box Users. Otherwise confirm it.',
-            ),
-            more: L(
-                lang,
-                'Wie kritisch ein Benutzer ist, hängt von seinen Rechten ab. Die verrät die Box über ihre Schnittstelle nicht, bitte selbst nachsehen:\n• Nur Smart Home: kann Geräte schalten (Steckdosen, Heizung), aber nichts an der Box einstellen. Eher gering.\n• Nur NAS: Zugriff auf die Dateien im Box-Speicher. Gering bis mittel, je nach Inhalt.\n• FRITZ!Box Einstellungen: voller Zugriff auf die Box. Hoch.\nIn jedem Fall kritischer, wenn "Zugang auch aus dem Internet" an ist oder das Kennwort schwach ist. Unbenutzte Konten trotzdem löschen, jedes ist ein weiteres Kennwort, das jemand erraten kann.',
+                ? t('This user was just created. If it was not you, this is a red flag.')
+                : t('Has access to the box. Unused accounts are an unnecessary risk.'),
+            advice: t('If you do not need it, delete it under System > FRITZ!Box Users. Otherwise confirm it.'),
+            more: t(
                 'How critical a user is depends on its rights. The box does not report them through its interface, please check yourself:\n• Smart home only: can switch devices (sockets, heating) but not change the box. Rather low.\n• NAS only: access to files on the box storage. Low to medium, depending on the content.\n• FRITZ!Box settings: full access to the box. High.\nIn any case more critical if "access from the internet" is on or the password is weak. Still delete unused accounts, each one is another password someone can guess.',
             ),
             ackable: true,
@@ -158,23 +120,12 @@ export async function checkSettings(
                 id: `wlan:${i}:weak`,
                 category: 'settings',
                 severity: beacon === 'none' ? 'warning' : 'critical',
-                title:
-                    beacon === 'none'
-                        ? L(lang, `WLAN "${ssid}" ist offen`, `WLAN "${ssid}" is open`)
-                        : L(lang, `WLAN "${ssid}" nutzt WEP`, `WLAN "${ssid}" uses WEP`),
+                title: beacon === 'none' ? t('WLAN "%s" is open', ssid) : t('WLAN "%s" uses WEP', ssid),
                 detail:
                     beacon === 'none'
-                        ? L(
-                              lang,
-                              'Jeder in Reichweite kann sich verbinden. Bei einem bewusst offenen Gast-Hotspot bestätigen.',
-                              'Anyone in range can connect. Confirm if this is an intended guest hotspot.',
-                          )
-                        : L(lang, 'WEP lässt sich in Minuten knacken.', 'WEP can be cracked in minutes.'),
-                advice: L(
-                    lang,
-                    'Unter WLAN > Sicherheit WPA2 + WPA3 einstellen.',
-                    'Set WPA2 + WPA3 under Wi-Fi > Security.',
-                ),
+                        ? t('Anyone in range can connect. Confirm if this is an intended guest hotspot.')
+                        : t('WEP can be cracked in minutes.'),
+                advice: t('Set WPA2 + WPA3 under Wi-Fi > Security.'),
                 ackable: beacon === 'none',
             });
         } else if (beacon === 'wpa') {
@@ -182,13 +133,9 @@ export async function checkSettings(
                 id: `wlan:${i}:wpa1`,
                 category: 'settings',
                 severity: 'warning',
-                title: L(lang, `WLAN "${ssid}" nutzt nur WPA`, `WLAN "${ssid}" uses WPA only`),
-                detail: L(lang, 'WPA (Version 1) gilt als veraltet.', 'WPA (version 1) is outdated.'),
-                advice: L(
-                    lang,
-                    'Unter WLAN > Sicherheit WPA2 + WPA3 einstellen.',
-                    'Set WPA2 + WPA3 under Wi-Fi > Security.',
-                ),
+                title: t('WLAN "%s" uses WPA only', ssid),
+                detail: t('WPA (version 1) is outdated.'),
+                advice: t('Set WPA2 + WPA3 under Wi-Fi > Security.'),
             });
         }
         if (i === 1) {
@@ -199,12 +146,8 @@ export async function checkSettings(
                     id: 'wlan:wps',
                     category: 'settings',
                     severity: 'info',
-                    title: L(lang, 'WPS ist aktiv', 'WPS is active'),
-                    detail: L(
-                        lang,
-                        'Geräte können sich gerade per Knopfdruck/PIN verbinden.',
-                        'Devices can currently connect via push button/PIN.',
-                    ),
+                    title: t('WPS is active'),
+                    detail: t('Devices can currently connect via push button/PIN.'),
                     ackable: true,
                 });
             }

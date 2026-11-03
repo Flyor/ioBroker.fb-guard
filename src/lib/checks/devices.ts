@@ -1,6 +1,6 @@
 import { parseXml } from '../tr064/soap';
-import type { Lang } from '../knowledge/ports';
-import { type CheckContext, L, isOn, tryCall } from './common';
+import { t } from '../i18n';
+import { type CheckContext, isOn, tryCall } from './common';
 
 export interface Host {
     mac: string;
@@ -105,10 +105,8 @@ export function isKnownWithNewAddress(hosts: Host[], mac: string | undefined, na
 }
 
 /** Systems known to use private (changing) addresses. */
-export function randomMacSystems(lang: Lang): string {
-    return L(
-        lang,
-        'Betrifft vor allem iPhone, iPad, Apple Watch und Mac ("Private WLAN-Adresse"), Android ab Version 10 ("Zufällige MAC"), Windows 10/11 ("Zufällige Hardwareadressen") und Chromebooks. Je nach Einstellung wechselt die Adresse pro Netz oder regelmäßig.',
+export function randomMacSystems(): string {
+    return t(
         'Mainly iPhone, iPad, Apple Watch and Mac ("Private Wi-Fi address"), Android 10 and later ("Randomized MAC"), Windows 10/11 ("Random hardware addresses") and Chromebooks. Depending on the setting the address changes per network or regularly.',
     );
 }
@@ -116,39 +114,29 @@ export function randomMacSystems(lang: Lang): string {
 /**
  * Short overview for the settings page: how many devices the box knows and which use private addresses.
  */
-export function describeHosts(hosts: Host[] | undefined, lang: Lang): string {
+export function describeHosts(hosts: Host[] | undefined): string {
     if (!hosts) {
-        return L(
-            lang,
-            'Die Geräteliste der Box ist nicht lesbar (Recht "FRITZ!Box Einstellungen" fehlt?).',
-            'The device list of the box cannot be read (right "FRITZ!Box Settings" missing?).',
-        );
+        return t('The device list of the box cannot be read (right "FRITZ!Box Settings" missing?).');
     }
     const random = hosts.filter(h => isRandomMac(h.mac));
     const names = [...new Set(random.map(h => h.name || '?'))].slice(0, 15);
     const lines = [
-        L(
-            lang,
-            `Die Box kennt ${hosts.length} Geräte, ${hosts.filter(h => h.active).length} davon gerade aktiv.`,
-            `The box knows ${hosts.length} devices, ${hosts.filter(h => h.active).length} of them active right now.`,
-        ),
+        t('The box knows %s devices, %s of them active right now.', hosts.length, hosts.filter(h => h.active).length),
     ];
     if (random.length) {
         lines.push(
-            L(
-                lang,
-                `${random.length} nutzen eine private (wechselnde) Adresse: ${names.join(', ')}${random.length > names.length ? ', …' : ''}. Diese können nach einem Adresswechsel erneut als "neu" auftauchen.`,
-                `${random.length} use a private (changing) address: ${names.join(', ')}${random.length > names.length ? ', …' : ''}. They can show up as "new" again after an address change.`,
+            t(
+                '%s use a private (changing) address: %s. They can show up as "new" again after an address change.',
+                random.length,
+                names.join(', ') + (random.length > names.length ? ', …' : ''),
             ),
         );
     } else {
-        lines.push(L(lang, 'Kein Gerät nutzt eine private Adresse.', 'No device uses a private address.'));
+        lines.push(t('No device uses a private address.'));
     }
     if (hosts.length <= 3) {
         lines.push(
-            L(
-                lang,
-                'Sehr wenige Geräte: Steht ein weiterer Router hinter der Box, sieht die Box nur diesen, nicht die Geräte dahinter.',
+            t(
                 'Very few devices: if another router sits behind the box, the box only sees that router, not the devices behind it.',
             ),
         );

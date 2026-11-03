@@ -334,11 +334,11 @@
                             "value": "off"
                         },
                         {
-                            "label": "Daily at 9:00",
+                            "label": "Daily between 9:00 and 10:00",
                             "value": "daily"
                         },
                         {
-                            "label": "Mondays at 9:00",
+                            "label": "Mondays between 9:00 and 10:00",
                             "value": "weekly"
                         }
                     ],
