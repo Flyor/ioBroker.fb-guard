@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "fb-guard",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "news": {
+      "0.1.3": {
+        "en": "Messages and states are available in all ioBroker languages\nSummaries and vendor checks run at a random time, so not all systems access the services at once",
+        "de": "Meldungen und Datenpunkte gibt es in allen ioBroker-Sprachen\nZusammenfassungen und Herstellerprüfungen laufen zu einem zufälligen Zeitpunkt, damit nicht alle Systeme gleichzeitig auf die Dienste zugreifen",
+        "ru": "Сообщения и состояния доступны на всех языках ioBroker\nСводки и проверки производителя выполняются в случайное время, чтобы не все системы обращались к сервисам одновременно",
+        "pt": "Mensagens e estados estão disponíveis em todos os idiomas do ioBroker\nOs resumos e as verificações do fabricante são executados num momento aleatório, para que nem todos os sistemas acedam aos serviços ao mesmo tempo",
+        "nl": "Berichten en states zijn beschikbaar in alle ioBroker-talen\nSamenvattingen en fabrikantcontroles draaien op een willekeurig moment, zodat niet alle systemen tegelijk de diensten benaderen",
+        "fr": "Les messages et les états sont disponibles dans toutes les langues d'ioBroker\nLes résumés et les vérifications du fabricant s'exécutent à un moment aléatoire, afin que tous les systèmes n'accèdent pas aux services en même temps",
+        "it": "Messaggi e stati sono disponibili in tutte le lingue di ioBroker\nI riepiloghi e i controlli del produttore vengono eseguiti in un momento casuale, così non tutti i sistemi accedono ai servizi contemporaneamente",
+        "es": "Los mensajes y estados están disponibles en todos los idiomas de ioBroker\nLos resúmenes y las comprobaciones del fabricante se ejecutan en un momento aleatorio, para que no todos los sistemas accedan a los servicios a la vez",
+        "pl": "Komunikaty i stany są dostępne we wszystkich językach ioBroker\nPodsumowania i kontrole producenta uruchamiane są w losowym czasie, aby nie wszystkie systemy łączyły się z usługami jednocześnie",
+        "uk": "Повідомлення та стани доступні всіма мовами ioBroker\nЗведення та перевірки виробника виконуються у випадковий час, щоб не всі системи зверталися до сервісів одночасно",
+        "zh-cn": "消息和状态支持所有 ioBroker 语言\n摘要和厂商检查在随机时间运行，避免所有系统同时访问服务"
+      },
       "0.1.2": {
         "en": "The trusted certificate is bound to the box address and to its key, so a renewed certificate or a new box address no longer raises an alarm\n\"Trust certificate again\" accepts exactly the certificate from the warning\nTest connection shows the certificate fingerprint and checks the rights more strictly\nReadable adapter title\nFirmware comparison with the vendor server works again with the current file format\nLab firmware is reported, and newer lab versions are found on the vendor lab page\nREADME explains what the adapter is for\nFailed Wi-Fi logins (wrong key) are reported per device\nReports when the model gets no more updates, using the vendor support list",
         "de": "Das Zertifikat ist an die Boxadresse und den Schlüssel gebunden, sodass ein neues Zertifikat keinen Alarm mehr auslöst\n„Trust certificate again“ akzeptiert genau das Zertifikat aus der Warnung\nDer Verbindungstest zeigt den Zertifikatsabdruck und prüft die Rechte genauer\nLesbarer Adaptertitel\nFirmwarevergleich mit dem Herstellerserver läuft wieder im aktuellen Format\nLab-Firmware wird gemeldet. Neuere Lab-Versionen finden Sie auf der Herstellerseite\nREADME erklärt, wofür der Adapter ist\nWLAN-Logins (falscher Schlüssel) werden pro Gerät gemeldet\nMeldet über die Hersteller-Supportliste, wenn das Modell nicht mehr aktualisiert wird",

@@ -61,7 +61,7 @@ FRITZ!, FRITZ!Box, FRITZ!OS and MyFRITZ! are trademarks of FRITZ! GmbH. This pro
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.1.3 (2026-11-03)
 * (Flyor) Messages and states are available in all ioBroker languages
 * (Flyor) Summaries and vendor checks run at a random time, so not all systems access the services at once
 
